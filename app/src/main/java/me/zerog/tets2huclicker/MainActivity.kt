@@ -9,10 +9,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import me.zerog.tets2huclicker.mob.Mob
+import me.zerog.tets2huclicker.mob.Player
 
 class MainActivity : AppCompatActivity() {
     //Mob
-    var currLevel = 1;
+    var locationLevel = 1;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +28,8 @@ class MainActivity : AppCompatActivity() {
         val nameField = findViewById<TextView>(R.id.mobName);
         val healthBar = findViewById<ProgressBar>(R.id.mobHealthProgressBar);
 
-        var mob = Mob(currLevel);
+        var mob = Mob(locationLevel);
+        var player = Player(1, 0, 0, 10);
 
         healthField.text = mob.currHealth.toString();
         nameField.text = mob.name;
@@ -37,7 +39,7 @@ class MainActivity : AppCompatActivity() {
 
         val mobButton = findViewById<Button>(R.id.mobClick);
         mobButton.setOnClickListener {
-            mob.damage(1, true, currLevel);
+            mob.damage(1, true, locationLevel, player);
 
             healthField.setText(mob.currHealth.toString());
             nameField.setText(mob.name);

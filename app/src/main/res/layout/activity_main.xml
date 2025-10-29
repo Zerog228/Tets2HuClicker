@@ -13,7 +13,7 @@
         android:id="@+id/mobClick"
         android:layout_width="133dp"
         android:layout_height="84dp"
-        android:layout_marginBottom="380dp"
+        android:layout_marginBottom="264dp"
         android:text="Button"
         app:layout_constrainedHeight="true"
         app:layout_constrainedWidth="true"
@@ -38,8 +38,6 @@
         android:id="@+id/mobName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="58dp"
-        android:layout_marginBottom="615dp"
         android:defaultFocusHighlightEnabled="false"
         android:editable="false"
         android:ems="10"
@@ -52,12 +50,8 @@
         android:textSize="34sp"
         app:layout_constrainedHeight="true"
         app:layout_constrainedWidth="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.454"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        tools:layout_editor_absoluteX="5dp"
+        tools:layout_editor_absoluteY="109dp" />
 
     <EditText
         android:id="@+id/mobHealth"
@@ -86,5 +80,25 @@
 
     <androidx.constraintlayout.widget.Guideline android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
+    <EditText
+        android:id="@+id/editTextText2"
+        android:layout_width="162dp"
+        android:layout_height="37dp"
+        android:ems="10"
+        android:inputType="text"
+        android:text="Name"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="16dp" />
+
+    <EditText
+        android:id="@+id/editTextText3"
+        android:layout_width="162dp"
+        android:layout_height="37dp"
+        android:ems="10"
+        android:inputType="text"
+        android:text="Name"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="53dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

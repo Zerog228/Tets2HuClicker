@@ -1,5 +1,7 @@
 package me.zerog.tets2huclicker.mob;
 
+import androidx.annotation.Nullable;
+
 import java.util.Random;
 
 public class Mob {
@@ -7,27 +9,27 @@ public class Mob {
     private MobType type;
     private int maxHealth;
     private int currHealth;
-    private int currLevel;
+    private int locationLevel;
     private final int LEVEL_HP_MULT = 10;
     private boolean isAlive = true;
 
-    public Mob(int currLevel){
-        createMob(genType(), genHealth(currLevel), currLevel);
+    public Mob(int locationLevel){
+        createMob(genType(), genHealth(locationLevel), locationLevel);
     }
 
-    public Mob(int maxHealth, int currLevel) {
-        createMob(genType(), maxHealth, currLevel);
+    public Mob(int maxHealth, int locationLevel) {
+        createMob(genType(), maxHealth, locationLevel);
     }
 
 
-    public Mob(MobType type, int maxHealth, int currLevel) {
-        createMob(type, maxHealth, currLevel);
+    public Mob(MobType type, int maxHealth, int locationLevel) {
+        createMob(type, maxHealth, locationLevel);
     }
 
-    private void createMob(MobType type, int maxHealth, int currLevel){
-        if(currLevel <= 0){
-            this.currLevel = 1;
-            currLevel = 1;
+    private void createMob(MobType type, int maxHealth, int locationLevel){
+        if(locationLevel <= 0){
+            this.locationLevel = 1;
+            locationLevel = 1;
         }
         if(maxHealth <= 0){
             maxHealth = 10;
@@ -35,38 +37,43 @@ public class Mob {
         }
         this.type = type;
         this.maxHealth = maxHealth;
-        this.currLevel = currLevel;
+        this.locationLevel = locationLevel;
         this.currHealth = maxHealth;
         isAlive = true;
     }
 
-    private int genHealth(int currLevel){
-        if(currLevel <=0) {
-            currLevel = 1;
-            this.currLevel = 1;
+    private int genHealth(int locationLevel){
+        if(locationLevel <=0) {
+            locationLevel = 1;
+            this.locationLevel = 1;
         }
 
-        return LEVEL_HP_MULT * currLevel;
+        return LEVEL_HP_MULT * locationLevel;
     }
 
-    private void kill(){
+    private void kill(Player killer){
         this.isAlive = false;
+
+        if(killer != null){
+            killer.addExp((int) (locationLevel * killer.getExpMult()));
+            killer.addMoney((int) (locationLevel * killer.getMoneyMult()));
+        }
     }
 
     public void respawn(){
-        createMob(genType(), genHealth(currLevel), currLevel);
+        createMob(genType(), genHealth(locationLevel), locationLevel);
     }
 
     public void respawn(int newLevel){
-        createMob(genType(), genHealth(currLevel), newLevel);
+        createMob(genType(), genHealth(locationLevel), newLevel);
     }
 
     public void incLevel(){
-        currLevel++;
+        locationLevel++;
     }
 
     public void incLevel(int amount){
-        currLevel += amount;
+        locationLevel += amount;
     }
 
     public boolean isAlive(){
@@ -82,33 +89,33 @@ public class Mob {
      * @param damage
      * @return Returns leftover health
      */
-    public int damage(int damage){
+    public int damage(int damage, @Nullable Player attacker){
         if(this.currHealth > damage){
             currHealth -= damage;
             return currHealth;
         }else {
-            kill();
+            kill(attacker);
             return 0;
         }
     }
 
-    public int damage(int damage, boolean respawnIfDead){
+    public int damage(int damage, boolean respawnIfDead, @Nullable Player attacker){
         if(this.currHealth > damage){
             currHealth -= damage;
             return currHealth;
         }else {
-            kill();
+            kill(attacker);
             respawn();
             return 0;
         }
     }
 
-    public int damage(int damage, boolean respawnIfDead, int currLevel){
+    public int damage(int damage, boolean respawnIfDead, int currLevel, @Nullable Player attacker){
         if(this.currHealth > damage){
             currHealth -= damage;
             return currHealth;
         }else {
-            kill();
+            kill(attacker);
             respawn(currLevel);
             return 0;
         }
