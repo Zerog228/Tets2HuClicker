@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_constrainedHeight="true"
+    app:layout_constrainedWidth="true"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/mobClick"
+        android:layout_width="133dp"
+        android:layout_height="84dp"
+        android:layout_marginBottom="380dp"
+        android:text="Button"
+        app:layout_constrainedHeight="true"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/mobHealthProgressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="334dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="61dp"
+        android:background="#333333"
+        android:progressTint="#D30B0B"
+        android:scrollbarSize="40dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/mobName" />
+
+    <EditText
+        android:id="@+id/mobName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="58dp"
+        android:layout_marginBottom="615dp"
+        android:defaultFocusHighlightEnabled="false"
+        android:editable="false"
+        android:ems="10"
+        android:focusedByDefault="false"
+        android:gravity="center"
+        android:inputType="text"
+        android:selectAllOnFocus="false"
+        android:text="Name"
+        android:textIsSelectable="false"
+        android:textSize="34sp"
+        app:layout_constrainedHeight="true"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.454"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <EditText
+        android:id="@+id/mobHealth"
+        android:layout_width="332dp"
+        android:layout_height="50dp"
+        android:defaultFocusHighlightEnabled="false"
+        android:editable="false"
+        android:ems="10"
+        android:focusedByDefault="false"
+        android:gravity="center"
+        android:inputType="text"
+        android:selectAllOnFocus="false"
+        android:shadowColor="#000000"
+        android:text="Name"
+        android:textColor="@color/white"
+        android:textIsSelectable="false"
+        android:textSize="24sp"
+        app:layout_constrainedHeight="true"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mobName" />
+
+    <androidx.constraintlayout.widget.Guideline android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <androidx.constraintlayout.widget.Guideline android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
