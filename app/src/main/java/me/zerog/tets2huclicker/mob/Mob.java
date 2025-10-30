@@ -55,7 +55,7 @@ public class Mob {
         this.isAlive = false;
 
         if(killer != null){
-            killer.addExp((int) (locationLevel * killer.getExpMult()));
+            killer.addExp((int) (locationLevel * killer.getExpMult()) + 12);
             killer.addMoney((int) (locationLevel * killer.getMoneyMult()));
         }
     }
@@ -87,37 +87,47 @@ public class Mob {
     /**
      *
      * @param damage
-     * @return Returns leftover health
+     * @return Returns if died
      */
-    public int damage(int damage, @Nullable Player attacker){
+    public boolean damage(int damage, @Nullable Player attacker){
         if(this.currHealth > damage){
             currHealth -= damage;
-            return currHealth;
+            return false;
         }else {
             kill(attacker);
-            return 0;
+            return true;
         }
     }
 
-    public int damage(int damage, boolean respawnIfDead, @Nullable Player attacker){
+    /**
+     *
+     * @param damage
+     * @return Returns if died
+     */
+    public boolean damage(int damage, boolean respawnIfDead, @Nullable Player attacker){
         if(this.currHealth > damage){
             currHealth -= damage;
-            return currHealth;
+            return false;
         }else {
             kill(attacker);
             respawn();
-            return 0;
+            return true;
         }
     }
 
-    public int damage(int damage, boolean respawnIfDead, int currLevel, @Nullable Player attacker){
+    /**
+     *
+     * @param damage
+     * @return Returns if died
+     */
+    public boolean damage(int damage, boolean respawnIfDead, int currLevel, @Nullable Player attacker){
         if(this.currHealth > damage){
             currHealth -= damage;
-            return currHealth;
+            return false;
         }else {
             kill(attacker);
             respawn(currLevel);
-            return 0;
+            return true;
         }
     }
 

@@ -30,6 +30,9 @@ class MainActivity : AppCompatActivity() {
 
         var mob = Mob(locationLevel);
         var player = Player(1, 0, 0, 10);
+        val moneyField = findViewById<TextView>(R.id.money_field);
+        val levelField = findViewById<TextView>(R.id.level_field);
+        val expBar = findViewById<ProgressBar>(R.id.level_progress_bar);
 
         healthField.text = mob.currHealth.toString();
         nameField.text = mob.name;
@@ -37,9 +40,19 @@ class MainActivity : AppCompatActivity() {
         healthBar.setMax(mob.maxHealth);
         healthBar.setProgress(mob.currHealth)
 
+        expBar.setMin(0);
+        expBar.setMax(10);
+        moneyField.setText("0");
+        levelField.setText("1");
+
         val mobButton = findViewById<Button>(R.id.mobClick);
         mobButton.setOnClickListener {
-            mob.damage(1, true, locationLevel, player);
+            if(mob.damage(1, true, locationLevel, player)){
+                moneyField.setText(player.money.toString());
+                levelField.setText(player.level.toString()+" ("+player.exp+"/"+player.levelUpCost()+")");
+                expBar.setProgress(((player.expPercent * 100).toInt()))
+                expBar.setMax(player.levelUpCost());
+            }
 
             healthField.setText(mob.currHealth.toString());
             nameField.setText(mob.name);
