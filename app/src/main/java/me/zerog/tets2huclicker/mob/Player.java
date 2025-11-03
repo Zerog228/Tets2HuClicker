@@ -14,7 +14,7 @@ public class Player {
     private int health;
     private final List<Upgrades> upgrades = new ArrayList<>();
 
-    private static final int LEVEL_INCREASE_COST_MULT = 3;
+    private static final int LEVEL_INCREASE_COST_MULT = 10;
 
 
     public Player(int level, int exp, int money, int health) {
@@ -51,7 +51,15 @@ public class Player {
         return ((float) exp) / levelUpCost();
     }
 
+
     public void addExp(int amount){
+        exp += amount;
+        while(exp >= levelUpCost()){
+            addLevel(1);
+        }
+    }
+
+    /*public void addExp(int amount){
         //10
         if((this.exp + amount) - levelUpCost() > 0){
             //Вот тут ошибка
@@ -59,7 +67,7 @@ public class Player {
         }else {
             this.exp += amount;
         }
-    }
+    }*/
 
     private void addExp(int amount, int accum_lvl){
         //10
@@ -95,11 +103,11 @@ public class Player {
     }
 
     public int levelUpCost(){
-        return LEVEL_INCREASE_COST_MULT * level;
+        return LEVEL_INCREASE_COST_MULT * level * level;
     }
 
     public int levelUpCost(int lvl){
-        return LEVEL_INCREASE_COST_MULT * lvl;
+        return LEVEL_INCREASE_COST_MULT * lvl * lvl;
     }
 
     public float getMoneyMult() {

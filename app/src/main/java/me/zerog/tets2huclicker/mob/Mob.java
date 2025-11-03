@@ -55,7 +55,7 @@ public class Mob {
         this.isAlive = false;
 
         if(killer != null){
-            killer.addExp((int) (locationLevel * killer.getExpMult()) + 12);
+            killer.addExp((int) (locationLevel * killer.getExpMult()));
             killer.addMoney((int) (locationLevel * killer.getMoneyMult()));
         }
     }
