@@ -30,8 +30,6 @@ class MainActivity : AppCompatActivity() {
         val nameField = findViewById<TextView>(R.id.mobName);
         val healthBar = findViewById<ProgressBar>(R.id.mobHealthProgressBar);
 
-        //var mob = Mob(locationLevel);
-        //var player = Player(1, 0, 0, 10);
         val moneyField = findViewById<TextView>(R.id.money_field);
         val levelField = findViewById<TextView>(R.id.level_field);
         val expBar = findViewById<ProgressBar>(R.id.level_progress_bar);
