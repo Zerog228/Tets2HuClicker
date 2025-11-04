@@ -1,4 +1,4 @@
-package me.zerog.tets2huclicker.mob;
+package me.zerog.tets2huclicker;
 
 import java.util.ArrayList;
 import java.util.List;

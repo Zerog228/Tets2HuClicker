@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import me.zerog.tets2huclicker.mob.Mob
-import me.zerog.tets2huclicker.mob.Player
 
 class MainActivity : AppCompatActivity() {
     //Mob
@@ -41,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         healthBar.setProgress(mob.currHealth)
 
         expBar.setMin(0);
-        expBar.setMax(10);
+        expBar.setMax(player.levelUpCost());
         moneyField.setText("0");
         levelField.setText("1");
 
@@ -52,6 +51,7 @@ class MainActivity : AppCompatActivity() {
                 levelField.setText(player.level.toString()+" ("+player.exp+"/"+player.levelUpCost()+")");
                 expBar.progress = player.exp;
                 expBar.setMax(player.levelUpCost());
+                expBar.setMin(player.levelUpCost(player.level - 1));
             }
 
             healthField.setText(mob.currHealth.toString());

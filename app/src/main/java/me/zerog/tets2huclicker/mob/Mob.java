@@ -4,6 +4,8 @@ import androidx.annotation.Nullable;
 
 import java.util.Random;
 
+import me.zerog.tets2huclicker.Player;
+
 public class Mob {
 
     private MobType type;
@@ -144,14 +146,20 @@ public class Mob {
     }
 
     enum MobType {
-        RUMIA("Rumia"),
-        CIRNO("Cirno the Wise"),
         DAIYOUSEI("Daiyousei"),
         STAR("Star Sapphire"),
         LUNA("Luna Child"),
-        FAIRY("Fairy");
+        SUNNY("Sunny Milk"),
+        FAIRY("Fairy"),
+
+
+        RUMIA("Rumia the Polish"),
+        CIRNO("Cirno the Wise"),
+
+        ;
 
         public String name;
+        public float hp_mult, exp_mult, money_mult;
 
         MobType(String name){
             this.name = name;
