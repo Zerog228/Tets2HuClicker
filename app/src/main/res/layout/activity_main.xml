@@ -140,4 +140,13 @@
         app:layout_constraintTop_toTopOf="@+id/guideline"
         app:srcCompat="@drawable/yen_foreground" />
 
+    <ImageView
+        android:id="@+id/mob_image_view"
+        android:layout_width="128dp"
+        android:layout_height="130dp"
+        app:layout_constraintBottom_toTopOf="@+id/mobClick"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/cirno" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

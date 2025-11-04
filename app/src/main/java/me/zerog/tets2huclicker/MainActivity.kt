@@ -1,7 +1,10 @@
 package me.zerog.tets2huclicker
 
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.Icon
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
@@ -33,6 +36,9 @@ class MainActivity : AppCompatActivity() {
         val levelField = findViewById<TextView>(R.id.level_field);
         val expBar = findViewById<ProgressBar>(R.id.level_progress_bar);
 
+        val mobIcon = findViewById<ImageView>(R.id.mob_image_view);
+        mobIcon.setImageResource(mob.icon);
+
         healthField.text = mob.currHealth.toString();
         nameField.text = mob.name;
         healthBar.setMin(0);
@@ -46,12 +52,15 @@ class MainActivity : AppCompatActivity() {
 
         val mobButton = findViewById<Button>(R.id.mobClick);
         mobButton.setOnClickListener {
-            if(mob.damage(1, true, locationLevel, player)){
+            if(mob.damage(1, locationLevel, player)){
                 moneyField.setText(player.money.toString());
                 levelField.setText(player.level.toString()+" ("+player.exp+"/"+player.levelUpCost()+")");
                 expBar.progress = player.exp;
                 expBar.setMax(player.levelUpCost());
                 expBar.setMin(player.levelUpCost(player.level - 1));
+                mobIcon.setImageResource(mob.icon);
+
+                locationLevel++;
             }
 
             healthField.setText(mob.currHealth.toString());
