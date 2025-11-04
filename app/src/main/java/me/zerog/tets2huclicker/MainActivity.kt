@@ -38,20 +38,7 @@ class MainActivity : AppCompatActivity() {
 
         val mobIcon = findViewById<ImageView>(R.id.mob_image_view);
         mobIcon.setImageResource(mob.icon);
-
-        healthField.text = mob.currHealth.toString();
-        nameField.text = mob.name;
-        healthBar.setMin(0);
-        healthBar.setMax(mob.maxHealth);
-        healthBar.setProgress(mob.currHealth)
-
-        expBar.setMin(0);
-        expBar.setMax(player.levelUpCost());
-        moneyField.setText("0");
-        levelField.setText("1");
-
-        val mobButton = findViewById<Button>(R.id.mobClick);
-        mobButton.setOnClickListener {
+        mobIcon.setOnClickListener {
             if(mob.damage(1, locationLevel, player)){
                 moneyField.setText(player.money.toString());
                 levelField.setText(player.level.toString()+" ("+player.exp+"/"+player.levelUpCost()+")");
@@ -67,6 +54,36 @@ class MainActivity : AppCompatActivity() {
             nameField.setText(mob.name);
             healthBar.setProgress(mob.currHealth, true);
             healthBar.setMax(mob.maxHealth);
-        };
+        }
+
+        healthField.text = mob.currHealth.toString();
+        nameField.text = mob.name;
+        healthBar.setMin(0);
+        healthBar.setMax(mob.maxHealth);
+        healthBar.setProgress(mob.currHealth)
+
+        expBar.setMin(0);
+        expBar.setMax(player.levelUpCost());
+        moneyField.setText("0");
+        levelField.setText("1");
+
+        //val mobButton = findViewById<Button>(R.id.mobClick);
+        /*mobButton.setOnClickListener {
+            if(mob.damage(1, locationLevel, player)){
+                moneyField.setText(player.money.toString());
+                levelField.setText(player.level.toString()+" ("+player.exp+"/"+player.levelUpCost()+")");
+                expBar.progress = player.exp;
+                expBar.setMax(player.levelUpCost());
+                expBar.setMin(player.levelUpCost(player.level - 1));
+                mobIcon.setImageResource(mob.icon);
+
+                locationLevel++;
+            }
+
+            healthField.setText(mob.currHealth.toString());
+            nameField.setText(mob.name);
+            healthBar.setProgress(mob.currHealth, true);
+            healthBar.setMax(mob.maxHealth);
+        };*/
     }
 }

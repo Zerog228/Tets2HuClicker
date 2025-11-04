@@ -9,17 +9,30 @@
     app:layout_constrainedWidth="true"
     tools:context=".MainActivity">
 
+    <ImageView
+        android:id="@+id/mob_image_view"
+        android:layout_width="261dp"
+        android:layout_height="341dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/mobName"
+        app:srcCompat="@drawable/cirno" />
+
     <Button
         android:id="@+id/mobClick"
         android:layout_width="133dp"
         android:layout_height="84dp"
         android:layout_marginBottom="264dp"
         android:text="Button"
+        android:visibility="invisible"
         app:layout_constrainedHeight="true"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline"
+        app:layout_constraintVertical_bias="0.926" />
 
     <ProgressBar
         android:id="@+id/mobHealthProgressBar"
@@ -139,14 +152,5 @@
         app:layout_constraintStart_toEndOf="@+id/money_field"
         app:layout_constraintTop_toTopOf="@+id/guideline"
         app:srcCompat="@drawable/yen_foreground" />
-
-    <ImageView
-        android:id="@+id/mob_image_view"
-        android:layout_width="128dp"
-        android:layout_height="130dp"
-        app:layout_constraintBottom_toTopOf="@+id/mobClick"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/cirno" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

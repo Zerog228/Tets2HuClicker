@@ -85,6 +85,8 @@ public class Mob {
     }
 
     private MobType genType(int locationLevel){
+        return MobType.CIRNO;
+        /*
         //Check if boss
         if(locationLevel % LOCATION_LEVELS_PER_BOSS == 0){
             return getBoss(locationLevel);
@@ -99,6 +101,8 @@ public class Mob {
 
         //If none passes
         return MobType.values()[new Random().nextInt(MobType.values().length)];
+
+         */
     }
 
     /**
