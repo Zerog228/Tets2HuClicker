@@ -18,7 +18,7 @@ public class Mob {
     private int currHealth;
     private int locationLevel;
     private final int LEVEL_HP_MULT = 10;
-    private final int LOCATION_LEVELS_PER_BOSS = 100;
+    private final int LOCATION_LEVELS_PER_BOSS = 20;
     private boolean isAlive = true;
 
     public Mob(int locationLevel){
@@ -32,6 +32,10 @@ public class Mob {
 
     public Mob(MobType type, int maxHealth, int locationLevel) {
         createMob(type, maxHealth, locationLevel);
+    }
+
+    private int getTrueLocLevel(){
+        return (int) (locationLevel / LOCATION_LEVELS_PER_BOSS) + 1;
     }
 
     private void createMob(MobType type, int maxHealth, int locationLevel){
@@ -52,19 +56,18 @@ public class Mob {
 
     private int genHealth(int locationLevel){
         if(locationLevel <= 0) {
-            locationLevel = 1;
             this.locationLevel = 1;
         }
 
-        return (int) (LEVEL_HP_MULT + locationLevel * 0.1);
+        return (int) (LEVEL_HP_MULT * getTrueLocLevel() * type.getHpMult());
     }
 
     private void kill(Player killer){
         this.isAlive = false;
 
         if(killer != null){
-            killer.addExp((int) (killer.getExpMult() + locationLevel * 0.1));
-            killer.addMoney((int) (killer.getMoneyMult() + locationLevel * 0.1));
+            killer.addExp((int) (killer.getExpMult() * getTrueLocLevel() * type.getExpMult()));
+            killer.addMoney((int) (killer.getMoneyMult() * getTrueLocLevel() * type.getMoneyMult()));
         }
     }
 
@@ -72,37 +75,29 @@ public class Mob {
         createMob(genType(locationLevel), genHealth(locationLevel), locationLevel);
     }
 
-    public void incLevel(){
-        locationLevel++;
-    }
-
-    public void incLevel(int amount){
-        locationLevel += amount;
-    }
-
     public boolean isAlive(){
         return isAlive;
     }
 
     private MobType genType(int locationLevel){
-        return MobType.CIRNO;
-        /*
         //Check if boss
         if(locationLevel % LOCATION_LEVELS_PER_BOSS == 0){
-            return getBoss(locationLevel);
+            type = getBoss(locationLevel);
+            return type;
         }
 
         //Indoor or Outdoor. First 3 bosses will be outdoor, other 4 - indoor
         if(locationLevel < LOCATION_LEVELS_PER_BOSS * 3){
-            return getOutdoorEnemies().get(new Random().nextInt(getOutdoorEnemies().size()));
+            type = getOutdoorEnemies().get(new Random().nextInt(getOutdoorEnemies().size()));
+            return type;
         }else if(locationLevel < LOCATION_LEVELS_PER_BOSS * 7){
-            return getIndoorEnemies().get(new Random().nextInt(getIndoorEnemies().size()));
+            type = getIndoorEnemies().get(new Random().nextInt(getIndoorEnemies().size()));
+            return type;
         }
 
         //If none passes
-        return MobType.values()[new Random().nextInt(MobType.values().length)];
-
-         */
+        type = MobType.values()[new Random().nextInt(MobType.values().length)];
+        return type;
     }
 
     /**
@@ -196,38 +191,47 @@ public class Mob {
         STAR("Star Sapphire", R.drawable.star),
         LUNA("Luna Child", R.drawable.luna),
         SUNNY("Sunny Milk", R.drawable.sunny),
-        FAIRY("Fairy", R.drawable.fairy),
+        FAIRY("Fairy", R.drawable.fairy, 0.5f, 0.5f, 0.5f),
         WRIGGLE("Wriggle Nightbug", R.drawable.kedama),
 
-        KEDAMA("Kedama", R.drawable.kedama),
+        KEDAMA("Kedama", R.drawable.kedama, 1.5f, 0, 0),
 
         //Indoor mobs
-        FAIRY_MAID_ONE("Maid Fairy", R.drawable.fairy),
-        FAIRY_MAID_TWO("Maid Fairy", R.drawable.fairy),
-        FAIRY_MAID_THREE("Maid Fairy", R.drawable.fairy),
-        KOAKUMA("KOAKUMA", R.drawable.kedama),
+        FAIRY_MAID_ONE("Maid Fairy", R.drawable.fairy, 0.5f, 0.5f, 0.5f),
+        FAIRY_MAID_TWO("Maid Fairy", R.drawable.fairy, 0.5f, 0.5f, 0.5f),
+        FAIRY_MAID_THREE("Maid Fairy", R.drawable.fairy, 0.5f, 0.5f, 0.5f),
+        KOAKUMA("Koakuma", R.drawable.kedama),
+        KOISHI("Koishi", R.drawable.kedama, 1.2f, 2.0f, 1f),
 
 
         //Bosses
-        RUMIA("Rumia", R.drawable.rumia),
-        CIRNO("Cirno the Wise", R.drawable.cirno),
-        MEILING("Hong Meiling", R.drawable.kedama),
-        PATCHOULI("Patchouli Knowledge", R.drawable.kedama),
-        SAKUYA("Sakuya Izayoi", R.drawable.kedama),
-        REMILIA("Remilia Scarlet", R.drawable.kedama),
-        FLANDRE("Flandre Scarlet", R.drawable.kedama),
+        RUMIA("Rumia", R.drawable.rumia, 4, 6, 8),
+        CIRNO("Cirno the Wise", R.drawable.cirno, 6, 6, 8),
+        MEILING("Hong Meiling", R.drawable.kedama, 7, 6, 8),
+        PATCHOULI("Patchouli Knowledge", R.drawable.kedama, 4, 6, 8),
+        SAKUYA("Sakuya Izayoi", R.drawable.kedama, 7, 6, 8),
+        REMILIA("Remilia Scarlet", R.drawable.kedama, 9, 6, 8),
+        FLANDRE("Flandre Scarlet", R.drawable.kedama, 12, 6, 8),
 
-        MIMA("Mima the Forgotten", R.drawable.kedama),
+        MIMA("Mima the Forgotten", R.drawable.kedama, 4, 6, 8),
 
         ;
 
-        public final String name;
-        public float hp_mult, exp_mult, money_mult;
-        public final int icon;
+        private final String name;
+        private float hp_mult = 1, exp_mult = 1, money_mult = 1;
+        private final int icon;
 
         MobType(String name, int icon){
             this.name = name;
             this.icon = icon;
+        }
+
+        MobType(String name, int icon, float hp_mult, float exp_mult, float money_mult){
+            this.name = name;
+            this.icon = icon;
+            this.hp_mult = hp_mult;
+            this.exp_mult = exp_mult;
+            this.money_mult = money_mult;
         }
 
         public String getName(){
@@ -236,6 +240,18 @@ public class Mob {
 
         public int getIcon() {
             return icon;
+        }
+
+        public float getHpMult() {
+            return hp_mult;
+        }
+
+        public float getExpMult() {
+            return exp_mult;
+        }
+
+        public float getMoneyMult() {
+            return money_mult;
         }
     }
 }

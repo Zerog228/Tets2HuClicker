@@ -1,7 +1,6 @@
 package me.zerog.tets2huclicker;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
 public class Player {
 
@@ -12,9 +11,13 @@ public class Player {
     private float moneyMult = 1;
     private float expMult = 1;
     private int health;
-    private final List<Upgrades> upgrades = new ArrayList<>();
+    private final Map<Upgrade, Integer> upgrades = Map.of(
+            Upgrade.LONGER_STICK, 0,
+            Upgrade.MORE_EXP, 0,
+            Upgrade.MORE_MONEY, 0
+    );
 
-    private static final int LEVEL_INCREASE_COST_MULT = 10;
+    private static final int LEVEL_INCREASE_COST_MULT = 20;
 
 
     public Player(int level, int exp, int money, int health) {
@@ -40,7 +43,7 @@ public class Player {
 
     private void addLevel(int amount){
         this.level += amount;
-        this.upgradePoints += 1;
+        this.upgradePoints++;
     }
 
     public int getExp() {
@@ -57,28 +60,6 @@ public class Player {
         while(exp >= levelUpCost()){
             addLevel(1);
         }
-    }
-
-    /*public void addExp(int amount){
-        //10
-        if((this.exp + amount) - levelUpCost() > 0){
-            //Вот тут ошибка
-            addExp(-levelUpCost(), 1);
-        }else {
-            this.exp += amount;
-        }
-    }*/
-
-    private void addExp(int amount, int accum_lvl){
-        //10
-        if((this.exp + amount) - levelUpCost(accum_lvl) > 0){
-            //Вот тут ошибка
-            addLevel(1);
-            addExp(-levelUpCost(accum_lvl), accum_lvl);
-        }else {
-            this.exp += amount;
-        }
-        addLevel(accum_lvl);
     }
 
     public int getMoney() {
@@ -111,17 +92,68 @@ public class Player {
     }
 
     public float getMoneyMult() {
-        return moneyMult;
+        return moneyMult + (upgrades.get(Upgrade.MORE_MONEY) * Upgrade.MORE_MONEY.getAbilityPower());
     }
 
     public float getExpMult() {
-        return expMult;
+        return expMult + (upgrades.get(Upgrade.MORE_EXP) * Upgrade.MORE_EXP.getAbilityPower());
     }
 
-    enum Upgrades {
-        LONGER_STICK, //Damage upgrade
-        MORE_EXP,
-        MORE_MONEY;
+    public boolean upgradeAbility(Upgrade upgradeType){
+        try {
+            int upgrade_level = upgrades.get(upgradeType);
+            if(upgrade_level < upgradeType.getMaxLevel()){
+                if (removeMoney((upgrade_level + 1) * levelUpCost() + upgrade_level * upgradeType.getAdditionalCostPerLevel())) {
+                    upgrades.put(upgradeType, ++upgrade_level);
+                    return true;
+                } else {
+                    return false;
+                }
+            }else {
+                return false;
+            }
+        }catch (Exception e){
+            e.fillInStackTrace();
+            return false;
+        }
+    }
+
+    enum Upgrade {
+        LONGER_STICK(5, 15, 1, 15, 1f), //Damage upgrade
+        MORE_EXP(3, 50, 1, 50, 0.1f),
+        MORE_MONEY(3, 100, 1, 100, 0.1f);
+
+        private int max_level, cost, cost_in_points, additional_cost_per_level;
+        private float ability_power;
+
+        Upgrade(int max_level, int cost, int cost_in_points, int additional_cost_per_level, float ability_power){
+            this.max_level = max_level;
+            this.cost = cost;
+            this.cost_in_points = cost_in_points;
+            this.additional_cost_per_level = additional_cost_per_level;
+
+            this.ability_power = ability_power;
+        }
+
+        public int getMaxLevel() {
+            return max_level;
+        }
+
+        public int getCost() {
+            return cost;
+        }
+
+        public int getCostInPoints() {
+            return cost_in_points;
+        }
+
+        public int getAdditionalCostPerLevel() {
+            return additional_cost_per_level;
+        }
+
+        public float getAbilityPower() {
+            return ability_power;
+        }
     };
 
 }

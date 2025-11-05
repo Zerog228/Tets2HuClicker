@@ -19,6 +19,9 @@ class MainActivity : AppCompatActivity() {
     var player = Player(1, 0, 0, 10);
     var mob = Mob(locationLevel);
 
+    //TODO Текст-вступление у персонажей
+    //TODO Стартовый экран
+    //TODO Экран улучшений
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -52,8 +55,9 @@ class MainActivity : AppCompatActivity() {
 
             healthField.setText(mob.currHealth.toString());
             nameField.setText(mob.name);
-            healthBar.setProgress(mob.currHealth, true);
+
             healthBar.setMax(mob.maxHealth);
+            healthBar.setProgress(mob.currHealth, true);
         }
 
         healthField.text = mob.currHealth.toString();
