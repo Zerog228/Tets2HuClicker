@@ -8,8 +8,6 @@ public class Player {
     private int upgradePoints = 0;
     private int exp;
     private int money;
-    private float moneyMult = 1;
-    private float expMult = 1;
     private int health;
     private final Map<Upgrade, Integer> upgrades = Map.of(
             Upgrade.LONGER_STICK, 0,
@@ -62,6 +60,19 @@ public class Player {
         }
     }
 
+    public void forceSetExpAndLevel(int level, int exp){
+        this.level = level;
+        this.exp = exp;
+    }
+
+    public void setUpgradePoints(int upgradePoints) {
+        this.upgradePoints = upgradePoints;
+    }
+
+    public int getUpgradePoints() {
+        return upgradePoints;
+    }
+
     public int getMoney() {
         return money;
     }
@@ -92,11 +103,11 @@ public class Player {
     }
 
     public float getMoneyMult() {
-        return moneyMult + (upgrades.get(Upgrade.MORE_MONEY) * Upgrade.MORE_MONEY.getAbilityPower());
+        return 1 + (upgrades.get(Upgrade.MORE_MONEY) * Upgrade.MORE_MONEY.getAbilityPower());
     }
 
     public float getExpMult() {
-        return expMult + (upgrades.get(Upgrade.MORE_EXP) * Upgrade.MORE_EXP.getAbilityPower());
+        return 1 + (upgrades.get(Upgrade.MORE_EXP) * Upgrade.MORE_EXP.getAbilityPower());
     }
 
     public boolean upgradeAbility(Upgrade upgradeType){

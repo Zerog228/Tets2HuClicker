@@ -19,9 +19,11 @@ class MainActivity : AppCompatActivity() {
     var player = Player(1, 0, 0, 10);
     var mob = Mob(locationLevel);
 
-    //TODO Текст-вступление у персонажей
+    //TODO Тексты-диалоги у персонажей
     //TODO Стартовый экран
     //TODO Экран улучшений
+    //TODO Во вкладке улучшений будет Нитори, лавка и на прилавке улучшения
+    //TODO Рейму и управление ей
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -70,24 +72,5 @@ class MainActivity : AppCompatActivity() {
         expBar.setMax(player.levelUpCost());
         moneyField.setText("0");
         levelField.setText("1");
-
-        //val mobButton = findViewById<Button>(R.id.mobClick);
-        /*mobButton.setOnClickListener {
-            if(mob.damage(1, locationLevel, player)){
-                moneyField.setText(player.money.toString());
-                levelField.setText(player.level.toString()+" ("+player.exp+"/"+player.levelUpCost()+")");
-                expBar.progress = player.exp;
-                expBar.setMax(player.levelUpCost());
-                expBar.setMin(player.levelUpCost(player.level - 1));
-                mobIcon.setImageResource(mob.icon);
-
-                locationLevel++;
-            }
-
-            healthField.setText(mob.currHealth.toString());
-            nameField.setText(mob.name);
-            healthBar.setProgress(mob.currHealth, true);
-            healthBar.setMax(mob.maxHealth);
-        };*/
     }
 }

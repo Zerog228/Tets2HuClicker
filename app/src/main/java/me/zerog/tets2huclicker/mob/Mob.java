@@ -148,7 +148,7 @@ public class Mob {
     }
 
     private List<MobType> getOutdoorEnemies(){
-        return List.of(MobType.DAIYOUSEI, MobType.STAR, MobType.LUNA, MobType.SUNNY, MobType.FAIRY, MobType.KEDAMA);
+        return List.of(MobType.DAIYOUSEI, MobType.STAR, MobType.LUNA, MobType.SUNNY, MobType.FAIRY, MobType.KEDAMA, MobType.KAGEROU);
     }
 
     private List<MobType> getIndoorEnemies(){
@@ -188,12 +188,14 @@ public class Mob {
     enum MobType { //TODO Draw textures
         //Outdoor mobs
         DAIYOUSEI("Daiyousei", R.drawable.daiyousei),
-        STAR("Star Sapphire", R.drawable.star),
+        STAR("Star Sapphire", R.drawable.kedama),
         LUNA("Luna Child", R.drawable.luna),
         SUNNY("Sunny Milk", R.drawable.sunny),
         FAIRY("Fairy", R.drawable.fairy, 0.5f, 0.5f, 0.5f),
         WRIGGLE("Wriggle Nightbug", R.drawable.kedama),
+        KAGEROU("Kagerou Imaizumi", R.drawable.kagerou), //To add or not to add?
 
+        //Both indoor and outdoor
         KEDAMA("Kedama", R.drawable.kedama, 1.5f, 0, 0),
 
         //Indoor mobs
@@ -202,7 +204,6 @@ public class Mob {
         FAIRY_MAID_THREE("Maid Fairy", R.drawable.fairy, 0.5f, 0.5f, 0.5f),
         KOAKUMA("Koakuma", R.drawable.kedama),
         KOISHI("Koishi", R.drawable.kedama, 1.2f, 2.0f, 1f),
-
 
         //Bosses
         RUMIA("Rumia", R.drawable.rumia, 4, 6, 8),
@@ -213,7 +214,11 @@ public class Mob {
         REMILIA("Remilia Scarlet", R.drawable.kedama, 9, 6, 8),
         FLANDRE("Flandre Scarlet", R.drawable.kedama, 12, 6, 8),
 
+        //Additional bosses
         MIMA("Mima the Forgotten", R.drawable.kedama, 4, 6, 8),
+
+        //NPC's
+        NITORI("Nitori Kappashiro", R.drawable.nitori), //Merchant in the shop
 
         ;
 
