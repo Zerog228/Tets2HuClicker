@@ -1,9 +1,6 @@
 package me.zerog.tets2huclicker
 
-import android.graphics.drawable.Drawable
-import android.graphics.drawable.Icon
 import android.os.Bundle
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -12,18 +9,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import me.zerog.tets2huclicker.mob.Mob
+import me.zerog.tets2huclicker.utils.ProgressManager
 
 class MainActivity : AppCompatActivity() {
-    //Mob
-    var locationLevel = 1;
-    var player = Player(1, 0, 0, 10);
-    var mob = Mob(locationLevel);
+    var player = ProgressManager.loadProgress(0)
+    var mob = Mob(player.locationLevel);
 
-    //TODO Тексты-диалоги у персонажей
+    //TODO Текст-вступление у персонажей
     //TODO Стартовый экран
     //TODO Экран улучшений
-    //TODO Во вкладке улучшений будет Нитори, лавка и на прилавке улучшения
-    //TODO Рейму и управление ей
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -44,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         val mobIcon = findViewById<ImageView>(R.id.mob_image_view);
         mobIcon.setImageResource(mob.icon);
         mobIcon.setOnClickListener {
-            if(mob.damage(1, locationLevel, player)){
+            if(mob.damage(1, player.locationLevel, player)){
                 moneyField.setText(player.money.toString());
                 levelField.setText(player.level.toString()+" ("+player.exp+"/"+player.levelUpCost()+")");
                 expBar.progress = player.exp;
@@ -52,7 +46,7 @@ class MainActivity : AppCompatActivity() {
                 expBar.setMin(player.levelUpCost(player.level - 1));
                 mobIcon.setImageResource(mob.icon);
 
-                locationLevel++;
+                player.increaseLocationLevel()
             }
 
             healthField.setText(mob.currHealth.toString());
@@ -72,5 +66,24 @@ class MainActivity : AppCompatActivity() {
         expBar.setMax(player.levelUpCost());
         moneyField.setText("0");
         levelField.setText("1");
+
+        //val mobButton = findViewById<Button>(R.id.mobClick);
+        /*mobButton.setOnClickListener {
+            if(mob.damage(1, locationLevel, player)){
+                moneyField.setText(player.money.toString());
+                levelField.setText(player.level.toString()+" ("+player.exp+"/"+player.levelUpCost()+")");
+                expBar.progress = player.exp;
+                expBar.setMax(player.levelUpCost());
+                expBar.setMin(player.levelUpCost(player.level - 1));
+                mobIcon.setImageResource(mob.icon);
+
+                locationLevel++;
+            }
+
+            healthField.setText(mob.currHealth.toString());
+            nameField.setText(mob.name);
+            healthBar.setProgress(mob.currHealth, true);
+            healthBar.setMax(mob.maxHealth);
+        };*/
     }
 }

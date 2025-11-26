@@ -1,11 +1,13 @@
 package me.zerog.tets2huclicker;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class Player {
 
+    private int location_level = 1;
     private int level;
-    private int upgradePoints = 0;
+    private int upgrade_points = 0;
     private int exp;
     private int money;
     private int health;
@@ -19,6 +21,10 @@ public class Player {
 
 
     public Player(int level, int exp, int money, int health) {
+        this(level, exp, money, health, new HashMap<>());
+    }
+
+    public Player(int level, int exp, int money, int health, Map<Upgrade, Integer> upgrades){
         if(level > 1){
             level = 1;
         }
@@ -33,6 +39,8 @@ public class Player {
         this.exp = exp;
         this.money = money;
         this.health = health;
+
+        setUpgrades(upgrades);
     }
 
     public int getLevel() {
@@ -41,7 +49,7 @@ public class Player {
 
     private void addLevel(int amount){
         this.level += amount;
-        this.upgradePoints++;
+        this.upgrade_points++;
     }
 
     public int getExp() {
@@ -65,12 +73,12 @@ public class Player {
         this.exp = exp;
     }
 
-    public void setUpgradePoints(int upgradePoints) {
-        this.upgradePoints = upgradePoints;
+    public void setUpgradePoints(int upgrade_points) {
+        this.upgrade_points = upgrade_points;
     }
 
     public int getUpgradePoints() {
-        return upgradePoints;
+        return upgrade_points;
     }
 
     public int getMoney() {
@@ -110,6 +118,18 @@ public class Player {
         return 1 + (upgrades.get(Upgrade.MORE_EXP) * Upgrade.MORE_EXP.getAbilityPower());
     }
 
+    public int getLocationLevel() {
+        return location_level;
+    }
+
+    public void increaseLocationLevel(){
+        this.location_level++;
+    }
+
+    public void setLocationLevel(int location_level) {
+        this.location_level = location_level;
+    }
+
     public boolean upgradeAbility(Upgrade upgradeType){
         try {
             int upgrade_level = upgrades.get(upgradeType);
@@ -126,6 +146,13 @@ public class Player {
         }catch (Exception e){
             e.fillInStackTrace();
             return false;
+        }
+    }
+
+    private void setUpgrades(Map<Upgrade, Integer> upgrades){
+        for(Upgrade upgrade : this.upgrades.keySet()){
+            if(upgrades.containsKey(upgrade))
+                this.upgrades.put(upgrade, upgrades.get(upgrade));
         }
     }
 
