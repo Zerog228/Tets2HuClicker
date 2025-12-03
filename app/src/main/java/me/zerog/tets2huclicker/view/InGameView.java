@@ -11,14 +11,14 @@ public class InGameView extends ViewModel {
     private Player player;
     private Mob mob;
 
-    public Player createPlayer(int id) {
+    public Player createOnlinePlayer(int id) {
         this.player = ProgressManager.loadProgress(id);
         return player;
     }
 
-    public Player getPlayer(int id) {
+    public Player getOnlinePlayer(int id) {
         if(player == null){
-            return createPlayer(id);
+            return createOnlinePlayer(id);
         }
         return player;
     }
@@ -34,7 +34,7 @@ public class InGameView extends ViewModel {
         return mob;
     }
 
-    //TODO Метод для восстановления моба от его хп и текстуры
+    //TODO Метод для восстановления моба от его хп и текстуры?
     public Mob createMob() {
         this.mob = new Mob(player.getLocationLevel());
         return mob;
