@@ -1,5 +1,7 @@
 package me.zerog.tets2huclicker;
 
+import androidx.annotation.Nullable;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,11 +13,7 @@ public class Player {
     private int exp;
     private int money;
     private int health;
-    private final Map<Upgrade, Integer> upgrades = Map.of(
-            Upgrade.LONGER_STICK, 0,
-            Upgrade.MORE_EXP, 0,
-            Upgrade.MORE_MONEY, 0
-    );
+    private final Map<Upgrade, Integer> upgrades;
 
     private static final int LEVEL_INCREASE_COST_MULT = 20;
 
@@ -24,7 +22,7 @@ public class Player {
         this(level, exp, money, health, new HashMap<>());
     }
 
-    public Player(int level, int exp, int money, int health, Map<Upgrade, Integer> upgrades){
+    public Player(int level, int exp, int money, int health, @Nullable Map<Upgrade, Integer> upgrades){
         if(level > 1){
             level = 1;
         }
@@ -40,7 +38,20 @@ public class Player {
         this.money = money;
         this.health = health;
 
+        this.upgrades = Map.of(
+                Upgrade.LONGER_STICK, 0,
+                Upgrade.MORE_EXP, 0,
+                Upgrade.MORE_MONEY, 0
+        );
+
         setUpgrades(upgrades);
+    }
+
+    public static Player copyOf(Player player){
+        Player copy = new Player(player.level, player.exp, player.money, player.health, player.upgrades);
+        copy.location_level = player.location_level;
+        copy.upgrade_points = player.upgrade_points;
+        return copy;
     }
 
     public int getLevel() {
@@ -111,11 +122,11 @@ public class Player {
     }
 
     public float getMoneyMult() {
-        return 1 + (upgrades.get(Upgrade.MORE_MONEY) * Upgrade.MORE_MONEY.getAbilityPower());
+        return 1 + (this.upgrades.get(Upgrade.MORE_MONEY) * Upgrade.MORE_MONEY.getAbilityPower());
     }
 
     public float getExpMult() {
-        return 1 + (upgrades.get(Upgrade.MORE_EXP) * Upgrade.MORE_EXP.getAbilityPower());
+        return 1 + (this.upgrades.get(Upgrade.MORE_EXP) * Upgrade.MORE_EXP.getAbilityPower());
     }
 
     public int getLocationLevel() {
@@ -150,10 +161,11 @@ public class Player {
     }
 
     private void setUpgrades(Map<Upgrade, Integer> upgrades){
-        for(Upgrade upgrade : this.upgrades.keySet()){
-            if(upgrades.containsKey(upgrade))
-                this.upgrades.put(upgrade, upgrades.get(upgrade));
-        }
+        if(upgrades != null)
+            for(Upgrade upgrade : this.upgrades.keySet()){
+                if(upgrades.containsKey(upgrade))
+                    this.upgrades.put(upgrade, upgrades.get(upgrade));
+            }
     }
 
     enum Upgrade {

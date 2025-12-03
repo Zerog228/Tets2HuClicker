@@ -12,8 +12,6 @@ import me.zerog.tets2huclicker.mob.Mob
 import me.zerog.tets2huclicker.utils.ProgressManager
 
 class MainActivity : AppCompatActivity() {
-    var player = ProgressManager.loadProgress(0)
-    var mob = Mob(player.locationLevel);
 
     //TODO Текст-вступление у персонажей
     //TODO Стартовый экран
@@ -36,17 +34,22 @@ class MainActivity : AppCompatActivity() {
         val expBar = findViewById<ProgressBar>(R.id.level_progress_bar);
 
         val mobIcon = findViewById<ImageView>(R.id.mob_image_view);
+
+        //Load player and mob
+        ProgressManager.loadProgress(1);
+        var mob = Mob(ProgressManager.getPlayer().level);
+
         mobIcon.setImageResource(mob.icon);
         mobIcon.setOnClickListener {
-            if(mob.damage(1, player.locationLevel, player)){
-                moneyField.setText(player.money.toString());
-                levelField.setText(player.level.toString()+" ("+player.exp+"/"+player.levelUpCost()+")");
-                expBar.progress = player.exp;
-                expBar.setMax(player.levelUpCost());
-                expBar.setMin(player.levelUpCost(player.level - 1));
+            if(mob.damage(1, ProgressManager.getPlayer().locationLevel, ProgressManager.getPlayer())){
+                moneyField.setText(ProgressManager.getPlayer().money.toString());
+                levelField.setText(ProgressManager.getPlayer().level.toString()+" ("+ProgressManager.getPlayer().exp+"/"+ProgressManager.getPlayer().levelUpCost()+")");
+                expBar.progress = ProgressManager.getPlayer().exp;
+                expBar.setMax(ProgressManager.getPlayer().levelUpCost());
+                expBar.setMin(ProgressManager.getPlayer().levelUpCost(ProgressManager.getPlayer().level - 1));
                 mobIcon.setImageResource(mob.icon);
 
-                player.increaseLocationLevel()
+                ProgressManager.getPlayer().increaseLocationLevel()
             }
 
             healthField.setText(mob.currHealth.toString());
@@ -63,27 +66,8 @@ class MainActivity : AppCompatActivity() {
         healthBar.setProgress(mob.currHealth)
 
         expBar.setMin(0);
-        expBar.setMax(player.levelUpCost());
+        expBar.setMax(ProgressManager.getPlayer().levelUpCost());
         moneyField.setText("0");
         levelField.setText("1");
-
-        //val mobButton = findViewById<Button>(R.id.mobClick);
-        /*mobButton.setOnClickListener {
-            if(mob.damage(1, locationLevel, player)){
-                moneyField.setText(player.money.toString());
-                levelField.setText(player.level.toString()+" ("+player.exp+"/"+player.levelUpCost()+")");
-                expBar.progress = player.exp;
-                expBar.setMax(player.levelUpCost());
-                expBar.setMin(player.levelUpCost(player.level - 1));
-                mobIcon.setImageResource(mob.icon);
-
-                locationLevel++;
-            }
-
-            healthField.setText(mob.currHealth.toString());
-            nameField.setText(mob.name);
-            healthBar.setProgress(mob.currHealth, true);
-            healthBar.setMax(mob.maxHealth);
-        };*/
     }
 }
