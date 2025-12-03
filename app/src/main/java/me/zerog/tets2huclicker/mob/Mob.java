@@ -188,7 +188,7 @@ public class Mob {
     enum MobType { //TODO Draw textures
         //Outdoor mobs
         DAIYOUSEI("Daiyousei", R.drawable.daiyousei),
-        STAR("Star Sapphire", R.drawable.kedama),
+        STAR("Star Sapphire", R.drawable.star),
         LUNA("Luna Child", R.drawable.luna),
         SUNNY("Sunny Milk", R.drawable.sunny),
         FAIRY("Fairy", R.drawable.fairy, 0.5f, 0.5f, 0.5f),

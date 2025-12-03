@@ -74,8 +74,10 @@ public class ProgressManager extends AsyncTask<Integer, Void, Player>{
 
     @Override
     protected void onPostExecute(Player player) {
-        ProgressManager.player = Player.copyOf(player);
-        super.onPostExecute(player);
+        if(player != null){
+            ProgressManager.player = Player.copyOf(player);
+            super.onPostExecute(player);
+        }
     }
 
     public static Player getPlayer(){
