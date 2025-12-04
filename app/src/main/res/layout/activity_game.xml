@@ -47,17 +47,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/mobName" />
 
-    <EditText
+    <TextView
         android:id="@+id/mobName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="109dp"
+        android:clickable="false"
+        android:contextClickable="false"
         android:defaultFocusHighlightEnabled="false"
         android:editable="false"
         android:ems="10"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
         android:focusedByDefault="false"
         android:gravity="center"
         android:inputType="text"
+        android:saveEnabled="false"
         android:selectAllOnFocus="false"
         android:text="Name"
         android:textIsSelectable="false"
@@ -68,25 +73,31 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
+    <TextView
         android:id="@+id/mobHealth"
         android:layout_width="332dp"
         android:layout_height="50dp"
+        android:layout_marginTop="16dp"
+        android:clickable="false"
+        android:contextClickable="false"
         android:defaultFocusHighlightEnabled="false"
         android:editable="false"
         android:ems="10"
+        android:focusableInTouchMode="false"
         android:focusedByDefault="false"
         android:gravity="center"
         android:inputType="text"
+        android:saveEnabled="false"
         android:selectAllOnFocus="false"
         android:shadowColor="#000000"
-        android:text="Name"
+        android:text="Health"
         android:textColor="@color/white"
         android:textIsSelectable="false"
         android:textSize="24sp"
         app:layout_constrainedHeight="true"
         app:layout_constrainedWidth="true"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.493"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/mobName" />
 
@@ -99,17 +110,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <EditText
+    <TextView
         android:id="@+id/money_field"
         android:layout_width="128dp"
         android:layout_height="38dp"
+        android:clickable="false"
         android:contextClickable="false"
         android:editable="false"
         android:ems="10"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:focusedByDefault="false"
         android:inputType="text"
+        android:saveEnabled="false"
         android:selectAllOnFocus="false"
-        android:text="Name"
+        android:text="Money"
         android:textIsSelectable="false"
+        android:textSize="30dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline" />
 
@@ -130,18 +147,28 @@
         app:layout_constraintEnd_toStartOf="@+id/level_image"
         app:layout_constraintTop_toTopOf="@+id/level_field" />
 
-    <EditText
+    <TextView
         android:id="@+id/level_field"
-        android:layout_width="107dp"
+        android:layout_width="wrap_content"
         android:layout_height="38dp"
         android:layout_marginTop="80dp"
+        android:clickable="false"
         android:contextClickable="false"
+        android:defaultFocusHighlightEnabled="false"
         android:editable="false"
         android:ems="10"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:focusedByDefault="false"
+        android:freezesText="true"
         android:inputType="text"
+        android:saveEnabled="false"
+        android:screenReaderFocusable="false"
         android:selectAllOnFocus="false"
-        android:text="Name"
+        android:text="Level"
+        android:textDirection="rtl"
         android:textIsSelectable="false"
+        android:textSize="28dp"
         app:layout_constraintEnd_toStartOf="@+id/level_image"
         app:layout_constraintTop_toTopOf="@+id/guideline" />
 

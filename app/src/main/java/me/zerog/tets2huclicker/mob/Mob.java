@@ -1,10 +1,7 @@
 package me.zerog.tets2huclicker.mob;
 
-import android.graphics.drawable.Drawable;
-
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 

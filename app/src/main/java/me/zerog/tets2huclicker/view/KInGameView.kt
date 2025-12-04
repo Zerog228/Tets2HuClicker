@@ -7,31 +7,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModel
+import me.zerog.tets2huclicker.MainActivity
 import me.zerog.tets2huclicker.Player
 import me.zerog.tets2huclicker.R
 import me.zerog.tets2huclicker.mob.Mob
+import me.zerog.tets2huclicker.security.AntiCheat
 import me.zerog.tets2huclicker.utils.ProgressManager
 
 class KInGameView() : ViewModel() {
 
-    private var player: Player? = null
     private var mob: Mob? = null
-
-    fun createOnlinePlayer(id: Int): Player {
-        this.player = ProgressManager.loadProgress(id)
-        return player!!
-    }
-
-    fun getOnlinePlayer(id: Int): Player {
-        if (player == null) {
-            return createOnlinePlayer(id)
-        }
-        return player!!
-    }
-
-    fun setPlayer(player: Player) {
-        this.player = player
-    }
 
     fun getMob(): Mob {
         if (mob == null) {
@@ -40,14 +25,8 @@ class KInGameView() : ViewModel() {
         return mob!!
     }
 
-    //TODO Сделать методы для локального получения игрока
-
     fun createMob(): Mob {
-        //TODO Переделать этот метод создания игрока
-        if(player == null){
-            player = Player(1, 0, 0, 10)
-        }
-        this.mob = Mob(player!!.locationLevel)
+        this.mob = Mob(ProgressManager.getSelectedPlayer().locationLevel)
         return mob!!
     }
 
@@ -56,7 +35,6 @@ class KInGameView() : ViewModel() {
     }
 
     fun showInGameView(activity : AppCompatActivity){
-        var player : Player = getOnlinePlayer(0)
         var mob : Mob = getMob()
 
         activity.setContentView(R.layout.activity_game)
@@ -78,15 +56,18 @@ class KInGameView() : ViewModel() {
 
         //Button
         mobIcon.setOnClickListener {
-            if(mob.damage(1, player.locationLevel, player)){
-                moneyField.setText(player.money.toString());
-                levelField.setText(player.level.toString()+" ("+player.exp+"/"+player.levelUpCost()+")");
-                expBar.progress = player.exp;
-                expBar.setMax(player.levelUpCost());
-                expBar.setMin(player.levelUpCost(player.level - 1));
+            //Anti-cheat
+            AntiCheat.addStamp()
+
+            if(mob.damage(1, ProgressManager.getSelectedPlayer().locationLevel, ProgressManager.getSelectedPlayer())){
+                moneyField.setText(ProgressManager.getSelectedPlayer().money.toString());
+                levelField.setText(getEXPText(ProgressManager.getSelectedPlayer()));
+                expBar.progress = ProgressManager.getSelectedPlayer().exp;
+                expBar.setMax(ProgressManager.getSelectedPlayer().levelUpCost());
+                expBar.setMin(ProgressManager.getSelectedPlayer().levelUpCost(ProgressManager.getSelectedPlayer().level - 1));
                 mobIcon.setImageResource(mob.icon);
 
-                player.increaseLocationLevel()
+                ProgressManager.getSelectedPlayer().increaseLocationLevel()
             }
 
             healthField.setText(mob.currHealth.toString());
@@ -103,9 +84,13 @@ class KInGameView() : ViewModel() {
         healthBar.setProgress(mob.currHealth)
 
         expBar.setMin(0);
-        expBar.setMax(player.levelUpCost());
-        moneyField.setText(player.money.toString());
-        levelField.setText(player.level.toString()+" ("+player.exp+"/"+player.levelUpCost()+")");
+        expBar.setMax(ProgressManager.getSelectedPlayer().levelUpCost());
+        moneyField.setText(ProgressManager.getSelectedPlayer().money.toString());
+        levelField.setText(getEXPText(ProgressManager.getSelectedPlayer()));
+    }
+
+    fun getEXPText(player: Player) : String{
+        return player.level.toString()+" ("+player.exp+"/"+player.levelUpCost()+")";
     }
 
 }

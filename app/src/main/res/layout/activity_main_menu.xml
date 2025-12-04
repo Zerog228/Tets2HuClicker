@@ -10,7 +10,7 @@
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/select_global_user_button"
+        android:id="@+id/select_online_player"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Global"
@@ -20,6 +20,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.6" />
+
+    <Button
+        android:id="@+id/refresh_online_player"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="refresh"
+        app:layout_constraintBottom_toTopOf="@+id/select_online_player"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.9"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
         android:id="@+id/select_local_user_button"
@@ -44,4 +56,78 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.9" />
+
+    <TextView
+        android:id="@+id/global_player_text_view"
+        android:layout_width="241dp"
+        android:layout_height="50dp"
+        android:autoText="false"
+        android:background="#000000"
+        android:clickable="false"
+        android:contextClickable="false"
+        android:defaultFocusHighlightEnabled="false"
+        android:editable="false"
+        android:focusableInTouchMode="false"
+        android:focusedByDefault="false"
+        android:selectAllOnFocus="false"
+        android:text="TextView"
+        android:textColor="#FFFFFF"
+        android:textDirection="locale"
+        android:textIsSelectable="false"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/select_online_player"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.602" />
+
+    <TextView
+        android:id="@+id/local_player_text_view"
+        android:layout_width="241dp"
+        android:layout_height="50dp"
+        android:autoText="false"
+        android:background="#000000"
+        android:clickable="false"
+        android:contextClickable="false"
+        android:defaultFocusHighlightEnabled="false"
+        android:editable="false"
+        android:focusableInTouchMode="false"
+        android:focusedByDefault="false"
+        android:selectAllOnFocus="false"
+        android:text="TextView"
+        android:textColor="#FDFDFD"
+        android:textIsSelectable="false"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/select_local_user_button"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.75" />
+
+    <TextView
+        android:id="@+id/zero_player_text_view"
+        android:layout_width="241dp"
+        android:layout_height="50dp"
+        android:autoText="false"
+        android:background="#000000"
+        android:clickable="false"
+        android:contextClickable="false"
+        android:defaultFocusHighlightEnabled="false"
+        android:editable="false"
+        android:focusableInTouchMode="false"
+        android:focusedByDefault="false"
+        android:selectAllOnFocus="false"
+        android:text="TextView"
+        android:textColor="#FFFFFF"
+        android:textIsSelectable="false"
+        android:textSize="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/create_new_user_button"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.9" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

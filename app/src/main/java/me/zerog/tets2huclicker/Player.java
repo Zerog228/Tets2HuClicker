@@ -7,6 +7,7 @@ import java.util.Map;
 
 public class Player {
 
+    private String name;
     private int location_level = 1;
     private int level;
     private int upgrade_points = 0;
@@ -17,12 +18,25 @@ public class Player {
 
     private static final int LEVEL_INCREASE_COST_MULT = 20;
 
+    public Player(){
+        this(1, 0, 0, 10);
+    }
 
     public Player(int level, int exp, int money, int health) {
-        this(level, exp, money, health, new HashMap<>());
+        this("Reimu", level, exp, money, health, new HashMap<>());
+    }
+
+    public Player(String name, int level, int exp, int money, int health) {
+        this(name, level, exp, money, health, new HashMap<>());
     }
 
     public Player(int level, int exp, int money, int health, @Nullable Map<Upgrade, Integer> upgrades){
+        this("Reimu", level, exp, money, health, upgrades);
+    }
+
+    public Player(String name, int level, int exp, int money, int health, @Nullable Map<Upgrade, Integer> upgrades){
+        this.name = name;
+
         if(level > 1){
             level = 1;
         }
@@ -38,20 +52,28 @@ public class Player {
         this.money = money;
         this.health = health;
 
-        this.upgrades = Map.of(
+        this.upgrades = new HashMap<>(Map.of(
                 Upgrade.LONGER_STICK, 0,
                 Upgrade.MORE_EXP, 0,
                 Upgrade.MORE_MONEY, 0
-        );
+        ));
 
         setUpgrades(upgrades);
     }
 
     public static Player copyOf(Player player){
-        Player copy = new Player(player.level, player.exp, player.money, player.health, player.upgrades);
+        Player copy = new Player(player.name, player.level, player.exp, player.money, player.health, player.upgrades);
         copy.location_level = player.location_level;
         copy.upgrade_points = player.upgrade_points;
         return copy;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getLevel() {
@@ -160,12 +182,13 @@ public class Player {
         }
     }
 
-    private void setUpgrades(Map<Upgrade, Integer> upgrades){
-        if(upgrades != null)
-            for(Upgrade upgrade : this.upgrades.keySet()){
-                if(upgrades.containsKey(upgrade))
+    private void setUpgrades(Map<Upgrade, Integer> upgrades) {
+        if (upgrades != null && !upgrades.isEmpty()) {
+            for (Upgrade upgrade : this.upgrades.keySet()) {
+                if (upgrades.containsKey(upgrade))
                     this.upgrades.put(upgrade, upgrades.get(upgrade));
             }
+        }
     }
 
     enum Upgrade {

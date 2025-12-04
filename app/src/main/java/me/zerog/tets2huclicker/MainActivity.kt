@@ -1,20 +1,12 @@
 package me.zerog.tets2huclicker
 
 import android.os.Bundle
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
-import me.zerog.tets2huclicker.mob.Mob
-import me.zerog.tets2huclicker.view.InGameView
+import me.zerog.tets2huclicker.utils.ProgressManager
 import me.zerog.tets2huclicker.view.KInGameView
 import me.zerog.tets2huclicker.view.KMainMenuView
-import me.zerog.tets2huclicker.view.MainMenuView
 
 class MainActivity : AppCompatActivity() {
     //TODO Текст-вступление у персонажей
@@ -22,20 +14,25 @@ class MainActivity : AppCompatActivity() {
     //TODO If you are cheating, Yamaxanadu will appear in screen corner and will grow in size
     //TODO Предистория?
 
+    companion object{
+        const val PLAYER_ID : Int = 1;
+        //val progress_manager : ProgressManager = ProgressManager();
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        ProgressManager.loadProgressFromServer(PLAYER_ID)
 
         var kMainMenuView : KMainMenuView = ViewModelProvider(this).get(KMainMenuView::class.java)
         var kInGameView : KInGameView = ViewModelProvider(this).get(KInGameView::class.java)
         //TODO Стартовый экран
 
+        when(kMainMenuView.getMenu()){
+            KMainMenuView.CurrentMenuType.MAIN_MENU -> kMainMenuView.showMainMenuView(this)
+            KMainMenuView.CurrentMenuType.MAIN_GAME_SCREEN -> kInGameView.showInGameView(this)
 
-        //TODO Сделать енамы для каждого возможного вида экрана и одну общую переменную. Отображать экраны в зависимости от енама
-        if(kMainMenuView.in_menu){
-            kMainMenuView.showMainMenuView(this)
-        }else{
-            kInGameView.showInGameView(this)
+            else -> kMainMenuView.showMainMenuView(this);
         }
     }
 }

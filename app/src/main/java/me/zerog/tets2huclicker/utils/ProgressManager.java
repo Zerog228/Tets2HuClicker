@@ -4,34 +4,33 @@ import android.os.AsyncTask;
 
 import com.google.gson.Gson;
 
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.concurrent.Executor;
 
-import me.zerog.tets2huclicker.MainActivity;
 import me.zerog.tets2huclicker.Player;
 
 public class ProgressManager extends AsyncTask<Integer, Void, Player>{
 
     private static final String USER_AGENT = "Mozilla/5.0";
     private static final String GET_URL = "http://10.0.2.2:8080/players/";
-    private static Player player;
+    private static Player online_player, offline_player, selected_player;
 
-    public static void saveProgress(Player player){
+    public static void saveProgressOnServer(Player player){
 
     }
 
-    public static Player loadProgress(int player_id){
-        if(player == null){
-            ProgressManager.player = new Player(1, 0, 0, 10);
-            new ProgressManager().execute(player_id);
+    public static void saveProgressLocally(Player player){
+
+    }
+
+    public static Player loadProgressFromServer(int player_id){
+        if(online_player == null){
+            ProgressManager.online_player = new Player();
         }
-        return player;
+        new ProgressManager().execute(player_id);
+        return online_player;
     }
 
     private static String sendGET(int player_id){
@@ -50,14 +49,14 @@ public class ProgressManager extends AsyncTask<Integer, Void, Player>{
                     while ((inputLine = in.readLine()) != null) {
                         response.append(inputLine);
                     }
-
+                    //System.out.println("Response - "+response);
                     return response.toString();
                 }
             } else {
-                //System.out.println("GET request did not work.");
+                System.out.println("GET request did not work.");
             }
         }catch (Exception exception){
-            //System.out.println("Failed to send request");
+            System.out.println("Failed to send request");
             exception.printStackTrace();
         }
         return null;
@@ -74,13 +73,32 @@ public class ProgressManager extends AsyncTask<Integer, Void, Player>{
 
     @Override
     protected void onPostExecute(Player player) {
-        if(player != null){
-            ProgressManager.player = Player.copyOf(player);
+        if(player != null){;
+            ProgressManager.online_player = Player.copyOf(player);
             super.onPostExecute(player);
         }
     }
 
-    public static Player getPlayer(){
-        return player;
+    public static Player getOnlinePlayer(){
+        if(online_player == null){
+            ProgressManager.online_player = new Player();
+        }
+        return online_player;
+    }
+
+    public static Player getOfflinePlayer(){
+        //TODO Offline player getter
+        return new Player();
+    }
+
+    public static Player getSelectedPlayer(){
+        if(selected_player == null){
+            selected_player = new Player();
+        }
+        return selected_player;
+    }
+
+    public static void selectPlayer(Player selected){
+        selected_player = selected;
     }
 }
