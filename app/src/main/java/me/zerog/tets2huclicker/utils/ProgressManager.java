@@ -1,6 +1,13 @@
 package me.zerog.tets2huclicker.utils;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+
+import androidx.datastore.core.DataStore;
+import androidx.datastore.preferences.core.Preferences;
+import androidx.datastore.preferences.rxjava3.RxPreferenceDataStoreBuilder;
+import androidx.datastore.rxjava3.RxDataStore;
 
 import com.google.gson.Gson;
 
@@ -9,6 +16,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import me.zerog.tets2huclicker.MainActivity;
 import me.zerog.tets2huclicker.Player;
 
 public class ProgressManager extends AsyncTask<Integer, Void, Player>{
@@ -16,12 +24,27 @@ public class ProgressManager extends AsyncTask<Integer, Void, Player>{
     private static final String USER_AGENT = "Mozilla/5.0";
     private static final String GET_URL = "http://10.0.2.2:8080/players/";
     private static Player online_player, offline_player, selected_player;
+    private static DataStoreSingleton datastore;
 
-    public static void saveProgressOnServer(Player player){
+    //TODO DATA SAVING
+    public static void saveProgressOnLocal(MainActivity activity){
+        if(datastore == null){
+            datastore = DataStoreSingleton.getInstance(activity);
+        }
 
+        datastore.setStringValue("SOME_SETTING", "bar");
     }
 
-    public static void saveProgressLocally(Player player){
+    public static void loadProgressFromLocal(MainActivity activity){
+        if(datastore == null){
+            datastore = DataStoreSingleton.getInstance(activity);
+        }
+
+        String foo = datastore.getStringValue("SOME_SETTING");
+        System.out.println(foo);
+    }
+
+    public static void saveProgressOnServer(Player player){
 
     }
 

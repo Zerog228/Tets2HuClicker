@@ -53,6 +53,7 @@ class KMainMenuView : ViewModel() {
         }
 
         //Online player selection
+        //TODO Отображать ошибку если игрок не найден а не начального игрока
         select_online_player_button.setOnClickListener {
             menu_type = CurrentMenuType.MAIN_GAME_SCREEN;
             ProgressManager.selectPlayer(ProgressManager.getOnlinePlayer())
