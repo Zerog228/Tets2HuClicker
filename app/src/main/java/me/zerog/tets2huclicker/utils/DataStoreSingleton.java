@@ -72,10 +72,26 @@ public class DataStoreSingleton {
         return updateResult.blockingGet() != pref_error;
     }
 
-    public String getStringValue(String Key) {
-        Preferences.Key<String> PREF_KEY = PreferencesKeys.stringKey(Key);
+    public String getStringValue(String key) {
+        Preferences.Key<String> PREF_KEY = PreferencesKeys.stringKey(key);
         Single<String> value = datastore.data().firstOrError().map(prefs -> prefs.get(PREF_KEY)).onErrorReturnItem("null");
         return value.blockingGet();
+    }
+
+    public String getOrDefault(String key, String def){
+        Preferences.Key<String> PREF_KEY = PreferencesKeys.stringKey(key);
+        Single<String> value = datastore.data().firstOrError().map(prefs -> prefs.get(PREF_KEY)).onErrorReturnItem("null");
+        String returnable = value.blockingGet();
+        return returnable.equals("null") ? def : returnable;
+    }
+
+    public int getOrDefault(String key, int def){
+        Preferences.Key<String> PREF_KEY = PreferencesKeys.stringKey(key);
+        Single<String> value = datastore.data().firstOrError().map(prefs -> prefs.get(PREF_KEY)).onErrorReturnItem("null");
+        try{
+            return Integer.parseInt(value.blockingGet());
+        }catch (Exception ignored){}
+        return def;
     }
 
     public boolean setBoolValue(String Key, boolean boolValue){

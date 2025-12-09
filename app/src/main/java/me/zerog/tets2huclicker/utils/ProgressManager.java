@@ -1,13 +1,6 @@
 package me.zerog.tets2huclicker.utils;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
-
-import androidx.datastore.core.DataStore;
-import androidx.datastore.preferences.core.Preferences;
-import androidx.datastore.preferences.rxjava3.RxPreferenceDataStoreBuilder;
-import androidx.datastore.rxjava3.RxDataStore;
 
 import com.google.gson.Gson;
 
@@ -26,6 +19,8 @@ public class ProgressManager extends AsyncTask<Integer, Void, Player>{
     private static Player online_player, offline_player, selected_player;
     private static DataStoreSingleton datastore;
 
+    private static final String NAME = "P_NAME", LEVEL = "P_LEVEL", XP = "P_XP", MONEY = "P_MONEY", HP = "P_HP", UPGRADES = "P_UPGRADES";
+
     //TODO DATA SAVING
     public static void saveProgressOnLocal(MainActivity activity){
         if(datastore == null){
@@ -40,8 +35,15 @@ public class ProgressManager extends AsyncTask<Integer, Void, Player>{
             datastore = DataStoreSingleton.getInstance(activity);
         }
 
-        String foo = datastore.getStringValue("SOME_SETTING");
-        System.out.println(foo);
+        String player_name = datastore.getOrDefault(NAME, "Reimu");
+        int level = datastore.getOrDefault(LEVEL, 1);
+        int xp = datastore.getOrDefault(XP, 1);
+        int money = datastore.getOrDefault(MONEY, 1);
+        int hp = datastore.getOrDefault(HP, 1);
+
+        String upgrades = datastore.getOrDefault(UPGRADES, Player.upgradesToString());
+
+        offline_player = new Player(player_name, level, xp, money, hp, Player.stringToUpgrades(upgrades));
     }
 
     public static void saveProgressOnServer(Player player){

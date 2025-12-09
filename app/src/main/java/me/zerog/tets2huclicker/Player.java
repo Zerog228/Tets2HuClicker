@@ -2,8 +2,13 @@ package me.zerog.tets2huclicker;
 
 import androidx.annotation.Nullable;
 
+import com.google.gson.Gson;
+
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class Player {
 
@@ -14,7 +19,7 @@ public class Player {
     private int exp;
     private int money;
     private int health;
-    private final Map<Upgrade, Integer> upgrades;
+    private final Map<Upgrade, Integer> upgrades = Arrays.stream(Upgrade.values()).collect(Collectors.toMap(value -> value, value -> 0));
 
     private static final int LEVEL_INCREASE_COST_MULT = 20;
 
@@ -51,12 +56,6 @@ public class Player {
         this.exp = exp;
         this.money = money;
         this.health = health;
-
-        this.upgrades = new HashMap<>(Map.of(
-                Upgrade.LONGER_STICK, 0,
-                Upgrade.MORE_EXP, 0,
-                Upgrade.MORE_MONEY, 0
-        ));
 
         setUpgrades(upgrades);
     }
@@ -191,7 +190,23 @@ public class Player {
         }
     }
 
-    enum Upgrade {
+    //Returns default upgrade list
+    public static String upgradesToString(){
+        return upgradesToString(Arrays.stream(Upgrade.values()).collect(Collectors.toMap(value -> value, value -> 0)));
+    }
+
+    public static String upgradesToString(Map<Upgrade, Integer> upgrades){
+        return new Gson().toJson(upgrades);
+
+    }
+
+
+    public static Map<Upgrade, Integer> stringToUpgrades(String upgrades){
+        return new Gson().fromJson(upgrades, HashMap.class);
+    }
+
+
+    public enum Upgrade {
         LONGER_STICK(5, 15, 1, 15, 1f), //Damage upgrade
         MORE_EXP(3, 50, 1, 50, 0.1f),
         MORE_MONEY(3, 100, 1, 100, 0.1f);
