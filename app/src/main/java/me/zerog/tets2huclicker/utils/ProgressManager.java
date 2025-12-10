@@ -21,15 +21,29 @@ public class ProgressManager extends AsyncTask<Integer, Void, Player>{
     private static Player online_player, offline_player, selected_player;
     private static DataStoreSingleton datastore;
 
-    private static final String NAME = "P_NAME", LEVEL = "P_LEVEL", XP = "P_XP", MONEY = "P_MONEY", HP = "P_HP", UPGRADES = "P_UPGRADES";
+    private static final String NAME = "P_NAME", LEVEL = "P_LEVEL", EXP = "P_EXP",
+            MONEY = "P_MONEY", HP = "P_HP", UPGRADES = "P_UPGRADES", PLAYER_ID = "P_ID";
 
-    //TODO DATA SAVING
+    public static int getPlayerID(MainActivity activity){
+        if(datastore == null){
+            datastore = DataStoreSingleton.getInstance(activity);
+        }
+
+        return datastore.getOrDefault(PLAYER_ID, 1);
+    }
+
     public static void saveProgressOnLocal(MainActivity activity){
         if(datastore == null){
             datastore = DataStoreSingleton.getInstance(activity);
         }
 
-        datastore.setStringValue(NAME, offline_player.getName());
+        datastore.setValue(NAME, offline_player.getName());
+        datastore.setValue(LEVEL, offline_player.getLevel());
+        datastore.setValue(EXP, offline_player.getExp());
+        datastore.setValue(MONEY, offline_player.getMoney());
+        datastore.setValue(HP, offline_player.getHealth());
+
+        datastore.setValue(UPGRADES, offline_player.myUpgradesToString());
     }
 
     public static void loadProgressFromLocal(MainActivity activity){
@@ -37,11 +51,11 @@ public class ProgressManager extends AsyncTask<Integer, Void, Player>{
             datastore = DataStoreSingleton.getInstance(activity);
         }
 
-        String player_name = datastore.getOrDefault(NAME, "Reimu");
-        int level = datastore.getOrDefault(LEVEL, 1);
-        int xp = datastore.getOrDefault(XP, 0);
-        int money = datastore.getOrDefault(MONEY, 0);
-        int hp = datastore.getOrDefault(HP, 10);
+        String player_name = datastore.getOrDefault(NAME, Player.DEF_NAME);
+        int level = datastore.getOrDefault(LEVEL, Player.DEF_LEVEL);
+        int xp = datastore.getOrDefault(EXP, Player.DEF_EXP);
+        int money = datastore.getOrDefault(MONEY, Player.DEF_MONEY);
+        int hp = datastore.getOrDefault(HP, Player.DEF_HEALTH);
 
         String upgrades = datastore.getOrDefault(UPGRADES, Player.upgradesToString());
 

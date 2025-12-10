@@ -15,16 +15,11 @@ class MainActivity : AppCompatActivity() {
     //TODO If you are cheating, Yamaxanadu will appear in screen corner and will grow in size
     //TODO Предистория?
 
-    companion object{
-        const val PLAYER_ID : Int = 1;
-        //val progress_manager : ProgressManager = ProgressManager();
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        ProgressManager.loadProgressFromServer(PLAYER_ID)
+        ProgressManager.loadProgressFromServer(ProgressManager.getPlayerID(this))
         ProgressManager.loadProgressFromLocal(this)
 
         var kMainMenuView : KMainMenuView = ViewModelProvider(this).get(KMainMenuView::class.java)

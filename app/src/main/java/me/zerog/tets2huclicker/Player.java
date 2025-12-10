@@ -23,12 +23,15 @@ public class Player {
 
     private static final int LEVEL_INCREASE_COST_MULT = 20;
 
+    public static final String DEF_NAME = "Reimu";
+    public static final int DEF_LEVEL = 1, DEF_EXP = 0, DEF_MONEY = 0, DEF_HEALTH = 10;
+
     public Player(){
-        this(1, 0, 0, 10);
+        this(DEF_LEVEL, DEF_EXP, DEF_MONEY, DEF_HEALTH);
     }
 
     public Player(int level, int exp, int money, int health) {
-        this("Reimu", level, exp, money, health, new HashMap<>());
+        this(DEF_NAME, level, exp, money, health, new HashMap<>());
     }
 
     public Player(String name, int level, int exp, int money, int health) {
@@ -36,20 +39,20 @@ public class Player {
     }
 
     public Player(int level, int exp, int money, int health, @Nullable Map<Upgrade, Integer> upgrades){
-        this("Reimu", level, exp, money, health, upgrades);
+        this(DEF_NAME, level, exp, money, health, upgrades);
     }
 
     public Player(String name, int level, int exp, int money, int health, @Nullable Map<Upgrade, Integer> upgrades){
         this.name = name;
 
-        if(level > 1){
-            level = 1;
+        if(level > DEF_LEVEL){
+            level = DEF_LEVEL;
         }
-        if(exp < 0){
-            exp = 0;
+        if(exp < DEF_EXP){
+            exp = DEF_EXP;
         }
-        if(health < 1){
-            health = 1;
+        if(health < DEF_HEALTH){
+            health = DEF_HEALTH;
         }
 
         this.level = level;
@@ -188,6 +191,10 @@ public class Player {
                     this.upgrades.put(upgrade, upgrades.get(upgrade));
             }
         }
+    }
+
+    public String myUpgradesToString(){
+        return upgradesToString(upgrades);
     }
 
     //Returns default upgrade list
