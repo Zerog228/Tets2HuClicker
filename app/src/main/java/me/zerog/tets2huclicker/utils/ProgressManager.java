@@ -2,6 +2,8 @@ package me.zerog.tets2huclicker.utils;
 
 import android.os.AsyncTask;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
@@ -27,7 +29,7 @@ public class ProgressManager extends AsyncTask<Integer, Void, Player>{
             datastore = DataStoreSingleton.getInstance(activity);
         }
 
-        datastore.setStringValue("SOME_SETTING", "bar");
+        datastore.setStringValue(NAME, offline_player.getName());
     }
 
     public static void loadProgressFromLocal(MainActivity activity){
@@ -37,15 +39,16 @@ public class ProgressManager extends AsyncTask<Integer, Void, Player>{
 
         String player_name = datastore.getOrDefault(NAME, "Reimu");
         int level = datastore.getOrDefault(LEVEL, 1);
-        int xp = datastore.getOrDefault(XP, 1);
-        int money = datastore.getOrDefault(MONEY, 1);
-        int hp = datastore.getOrDefault(HP, 1);
+        int xp = datastore.getOrDefault(XP, 0);
+        int money = datastore.getOrDefault(MONEY, 0);
+        int hp = datastore.getOrDefault(HP, 10);
 
         String upgrades = datastore.getOrDefault(UPGRADES, Player.upgradesToString());
 
         offline_player = new Player(player_name, level, xp, money, hp, Player.stringToUpgrades(upgrades));
     }
 
+    //TODO Post on server
     public static void saveProgressOnServer(Player player){
 
     }
@@ -104,16 +107,14 @@ public class ProgressManager extends AsyncTask<Integer, Void, Player>{
         }
     }
 
+    @Nullable
     public static Player getOnlinePlayer(){
-        if(online_player == null){
-            ProgressManager.online_player = new Player();
-        }
         return online_player;
     }
 
+    @Nullable
     public static Player getOfflinePlayer(){
-        //TODO Offline player getter
-        return new Player();
+        return offline_player;
     }
 
     public static Player getSelectedPlayer(){

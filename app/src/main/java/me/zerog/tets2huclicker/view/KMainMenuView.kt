@@ -44,21 +44,24 @@ class KMainMenuView : ViewModel() {
         val select_online_player_button = activity.findViewById<Button>(R.id.select_online_player);
         val refresh_online_player_button = activity.findViewById<Button>(R.id.refresh_online_player);
         val global_player_text_view = activity.findViewById<TextView>(R.id.global_player_text_view);
-        global_player_text_view.setText(getPlayerString(ProgressManager.getOnlinePlayer()))
+        global_player_text_view.setText(getPlayerString(ProgressManager.getOnlinePlayer(), "Player not found! Try refreshing connection"))
 
         //refresh
         refresh_online_player_button.setOnClickListener {
             ProgressManager.loadProgressFromServer(MainActivity.PLAYER_ID)
-            global_player_text_view.setText(getPlayerString(ProgressManager.getOnlinePlayer()))
+            global_player_text_view.setText(getPlayerString(ProgressManager.getOnlinePlayer(), "Player not found! Try refreshing connection"))
         }
 
         //Online player selection
-        //TODO Отображать ошибку если игрок не найден а не начального игрока
         select_online_player_button.setOnClickListener {
-            menu_type = CurrentMenuType.MAIN_GAME_SCREEN;
-            ProgressManager.selectPlayer(ProgressManager.getOnlinePlayer())
+            if(ProgressManager.getOnlinePlayer() != null){
+                menu_type = CurrentMenuType.MAIN_GAME_SCREEN;
+                ProgressManager.selectPlayer(ProgressManager.getOnlinePlayer())
 
-            kInGameView.showInGameView(activity)
+                kInGameView.showInGameView(activity)
+            }else{
+                //TODO If player == null
+            }
         }
     }
 
@@ -67,7 +70,19 @@ class KMainMenuView : ViewModel() {
         MAIN_GAME_SCREEN
     }
 
-    fun getPlayerString(player : Player) : String{
-        return player.name+" "+player.exp+"e "+player.money+"$ "+player.locationLevel+"_ll"
+    fun getPlayerString(player : Player?) : String{
+        if(player != null) {
+            return player.name + " " + player.exp + "e " + player.money + "$ " + player.locationLevel + "_ll"
+        }else{
+            return "Player not found!"
+        }
+    }
+
+    fun getPlayerString(player : Player?, if_not_found : String) : String{
+        if(player != null) {
+            return player.name + " " + player.exp + "e " + player.money + "$ " + player.locationLevel + "_ll"
+        }else{
+            return if_not_found;
+        }
     }
 }

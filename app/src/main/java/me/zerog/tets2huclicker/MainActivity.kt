@@ -23,9 +23,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        ProgressManager.loadProgressFromServer(PLAYER_ID)
 
-        ProgressManager.saveProgressOnLocal(this)
+        ProgressManager.loadProgressFromServer(PLAYER_ID)
         ProgressManager.loadProgressFromLocal(this)
 
         var kMainMenuView : KMainMenuView = ViewModelProvider(this).get(KMainMenuView::class.java)

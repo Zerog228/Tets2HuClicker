@@ -60,8 +60,8 @@ public class DataStoreSingleton {
         return ourInstance;
     }
 
-    public boolean setStringValue(String Key, String value){
-        Preferences.Key<String> PREF_KEY = PreferencesKeys.stringKey(Key);
+    public boolean setStringValue(String key, String value){
+        Preferences.Key<String> PREF_KEY = PreferencesKeys.stringKey(key);
 
         Single<Preferences> updateResult =  datastore.updateDataAsync(prefsIn -> {
             MutablePreferences mutablePreferences = prefsIn.toMutablePreferences();
@@ -94,13 +94,13 @@ public class DataStoreSingleton {
         return def;
     }
 
-    public boolean setBoolValue(String Key, boolean boolValue){
-        String value = boolValue ? "1" : "0";
-        return setStringValue(Key, value);
+    public boolean setBoolValue(String key, boolean bool_value){
+        String value = bool_value ? "1" : "0";
+        return setStringValue(key, value);
     }
 
-    boolean getBoolValue(String Key) {
-        return getStringValue(Key).equals("1");
+    boolean getBoolValue(String key) {
+        return getStringValue(key).equals("1");
     }
 }
 
