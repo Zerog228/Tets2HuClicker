@@ -45,18 +45,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.75" />
 
-    <Button
-        android:id="@+id/create_new_user_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Re:Zero"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.9"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.9" />
-
     <TextView
         android:id="@+id/global_player_text_view"
         android:layout_width="241dp"
@@ -106,28 +94,27 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.75" />
 
-    <TextView
-        android:id="@+id/zero_player_text_view"
-        android:layout_width="241dp"
-        android:layout_height="50dp"
-        android:autoText="false"
-        android:background="#000000"
-        android:clickable="false"
-        android:contextClickable="false"
-        android:defaultFocusHighlightEnabled="false"
-        android:editable="false"
-        android:focusableInTouchMode="false"
-        android:focusedByDefault="false"
-        android:selectAllOnFocus="false"
-        android:text="TextView"
-        android:textColor="#FFFFFF"
-        android:textIsSelectable="false"
-        android:textSize="20dp"
+    <Button
+        android:id="@+id/reset_progress_local_button"
+        android:layout_width="163dp"
+        android:layout_height="65dp"
+        android:layout_marginEnd="28dp"
+        android:text="Reset progress on local"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/create_new_user_button"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.881" />
+
+    <Button
+        android:id="@+id/reset_progress_server_button"
+        android:layout_width="163dp"
+        android:layout_height="65dp"
+        android:text="Reset progress on server"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/reset_progress_local_button"
+        app:layout_constraintHorizontal_bias="0.98"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.9" />
+        app:layout_constraintVertical_bias="0.881" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

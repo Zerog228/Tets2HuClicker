@@ -32,4 +32,15 @@ class MainActivity : AppCompatActivity() {
             else -> kMainMenuView.showMainMenuView(this);
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if(ProgressManager.getGameMode() == ProgressManager.GameMode.LOCAL){
+            ProgressManager.saveProgressOnLocal(this)
+        }
+    }
 }

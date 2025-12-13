@@ -21,6 +21,9 @@ public class Player {
     private int health;
     private final Map<Upgrade, Integer> upgrades = Arrays.stream(Upgrade.values()).collect(Collectors.toMap(value -> value, value -> 0));
 
+    private int last_mob_leftover_hp = 100;
+    private String last_mob_type = "Zun";
+
     private static final int LEVEL_INCREASE_COST_MULT = 20;
 
     public static final String DEF_NAME = "Reimu";

@@ -3,28 +3,40 @@ package me.zerog.tets2huclicker.utils;
 import android.os.AsyncTask;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.gson.Gson;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import me.zerog.tets2huclicker.MainActivity;
 import me.zerog.tets2huclicker.Player;
+import me.zerog.tets2huclicker.mob.Mob;
 
 public class ProgressManager extends AsyncTask<Integer, Void, Player>{
 
     private static final String USER_AGENT = "Mozilla/5.0";
     private static final String GET_URL = "http://10.0.2.2:8080/players/";
-    private static Player online_player, offline_player, selected_player;
+    private static Player online_player, local_player, selected_player;
     private static DataStoreSingleton datastore;
 
-    private static final String NAME = "P_NAME", LEVEL = "P_LEVEL", EXP = "P_EXP",
-            MONEY = "P_MONEY", HP = "P_HP", UPGRADES = "P_UPGRADES", PLAYER_ID = "P_ID";
+    private static Mob mob;
+    private static boolean mob_first_time_loaded = false;
+    private static int mob_leftover_health;
+    private static String mob_type_name;
 
-    public static int getPlayerID(MainActivity activity){
+    private static GameMode gameMode = GameMode.LOCAL;
+
+    //ID's
+    private static final String NAME = "P_NAME", LEVEL = "P_LEVEL", EXP = "P_EXP",
+            MONEY = "P_MONEY", HP = "P_HP", UPGRADES = "P_UPGRADES", PLAYER_ID = "P_ID",
+            LAST_MOB_TYPE = "MOB_TYPE", MOB_HEALTH = "MOB_HEALTH";
+
+    public static int getPlayerID(AppCompatActivity activity){
         if(datastore == null){
             datastore = DataStoreSingleton.getInstance(activity);
         }
@@ -32,34 +44,84 @@ public class ProgressManager extends AsyncTask<Integer, Void, Player>{
         return datastore.getOrDefault(PLAYER_ID, 1);
     }
 
-    public static void saveProgressOnLocal(MainActivity activity){
-        if(datastore == null){
-            datastore = DataStoreSingleton.getInstance(activity);
+    public static Mob genMob(){
+        if(mob_first_time_loaded && mob_type_name != null && !mob_type_name.equals("Zun")){
+            mob_first_time_loaded = false;
+            mob = new Mob(mob_type_name, mob_leftover_health, local_player.getLocationLevel());
+        }else {
+            mob = new Mob(selected_player.getLocationLevel());
         }
-
-        datastore.setValue(NAME, offline_player.getName());
-        datastore.setValue(LEVEL, offline_player.getLevel());
-        datastore.setValue(EXP, offline_player.getExp());
-        datastore.setValue(MONEY, offline_player.getMoney());
-        datastore.setValue(HP, offline_player.getHealth());
-
-        datastore.setValue(UPGRADES, offline_player.myUpgradesToString());
+        return mob;
     }
 
-    public static void loadProgressFromLocal(MainActivity activity){
+    public static Mob getMob(){
+        if(mob == null || mob.getCurrHealth() < 1){
+            return genMob();
+        }
+        return mob;
+    }
+
+    @NotNull
+    public static GameMode getGameMode() {
+        return gameMode;
+    }
+
+    public static void setGameModeToLocal(){
+        gameMode = GameMode.LOCAL;
+        selected_player = local_player;
+    }
+
+    public static void setGameModeToGlobal(){
+        gameMode = GameMode.GLOBAL;
+        selected_player = online_player;
+    }
+
+    public static void resetLocalPlayer(){
+        local_player = new Player();
+    }
+
+    public static void resetGlobalPlayer(){
+        online_player = new Player();
+        //TODO Reset player on server
+    }
+
+    public static void saveProgressOnLocal(AppCompatActivity activity){
         if(datastore == null){
             datastore = DataStoreSingleton.getInstance(activity);
         }
 
+        //Player data
+        datastore.setValue(NAME, local_player.getName());
+        datastore.setValue(LEVEL, local_player.getLevel());
+        datastore.setValue(EXP, local_player.getExp());
+        datastore.setValue(MONEY, local_player.getMoney());
+        datastore.setValue(HP, local_player.getHealth());
+
+        datastore.setValue(UPGRADES, local_player.myUpgradesToString());
+
+        //Mob data
+        datastore.setValue(LAST_MOB_TYPE, mob.getType());
+        datastore.setValue(MOB_HEALTH, mob.getCurrHealth());
+    }
+
+    public static void loadProgressFromLocal(AppCompatActivity activity){
+        if(datastore == null){
+            datastore = DataStoreSingleton.getInstance(activity);
+        }
+
+        //Loading player
         String player_name = datastore.getOrDefault(NAME, Player.DEF_NAME);
         int level = datastore.getOrDefault(LEVEL, Player.DEF_LEVEL);
         int xp = datastore.getOrDefault(EXP, Player.DEF_EXP);
         int money = datastore.getOrDefault(MONEY, Player.DEF_MONEY);
         int hp = datastore.getOrDefault(HP, Player.DEF_HEALTH);
-
         String upgrades = datastore.getOrDefault(UPGRADES, Player.upgradesToString());
 
-        offline_player = new Player(player_name, level, xp, money, hp, Player.stringToUpgrades(upgrades));
+        local_player = new Player(player_name, level, xp, money, hp, Player.stringToUpgrades(upgrades));
+
+        //Loading mob
+        mob_leftover_health = datastore.getOrDefault(MOB_HEALTH, 100);
+        mob_type_name = datastore.getOrDefault(LAST_MOB_TYPE, "Zun");
     }
 
     //TODO Post on server
@@ -67,10 +129,10 @@ public class ProgressManager extends AsyncTask<Integer, Void, Player>{
 
     }
 
+
+    //TODO Load mobType and leftoverHP from server
+    @Nullable
     public static Player loadProgressFromServer(int player_id){
-        if(online_player == null){
-            ProgressManager.online_player = new Player();
-        }
         new ProgressManager().execute(player_id);
         return online_player;
     }
@@ -128,7 +190,7 @@ public class ProgressManager extends AsyncTask<Integer, Void, Player>{
 
     @Nullable
     public static Player getOfflinePlayer(){
-        return offline_player;
+        return local_player;
     }
 
     public static Player getSelectedPlayer(){
@@ -138,7 +200,8 @@ public class ProgressManager extends AsyncTask<Integer, Void, Player>{
         return selected_player;
     }
 
-    public static void selectPlayer(Player selected){
-        selected_player = selected;
+    public enum GameMode{
+        LOCAL,
+        GLOBAL
     }
 }

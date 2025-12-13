@@ -13,26 +13,11 @@ import me.zerog.tets2huclicker.R
 import me.zerog.tets2huclicker.mob.Mob
 import me.zerog.tets2huclicker.security.AntiCheat
 import me.zerog.tets2huclicker.utils.ProgressManager
+import me.zerog.tets2huclicker.utils.ProgressManager.getMob
 
 class KInGameView() : ViewModel() {
 
     private var mob: Mob? = null
-
-    fun getMob(): Mob {
-        if (mob == null) {
-            return createMob()
-        }
-        return mob!!
-    }
-
-    fun createMob(): Mob {
-        this.mob = Mob(ProgressManager.getSelectedPlayer().locationLevel)
-        return mob!!
-    }
-
-    fun setMob(mob: Mob?) {
-        this.mob = mob
-    }
 
     fun showInGameView(activity : AppCompatActivity){
         var mob : Mob = getMob()
@@ -66,8 +51,9 @@ class KInGameView() : ViewModel() {
                 expBar.setMax(ProgressManager.getSelectedPlayer().levelUpCost());
                 expBar.setMin(ProgressManager.getSelectedPlayer().levelUpCost(ProgressManager.getSelectedPlayer().level - 1));
                 mobIcon.setImageResource(mob.icon);
-
                 ProgressManager.getSelectedPlayer().increaseLocationLevel()
+
+                ProgressManager.saveProgressOnLocal(activity)
             }
 
             healthField.setText(mob.currHealth.toString());

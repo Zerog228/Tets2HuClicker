@@ -22,36 +22,51 @@ public class Mob {
         createMob(genType(locationLevel), genHealth(locationLevel), locationLevel);
     }
 
-    public Mob(int maxHealth, int locationLevel) {
-        createMob(genType(locationLevel), maxHealth, locationLevel);
+    public Mob(MobType mobType, int locationLevel){
+        createMob(mobType, genHealth(locationLevel), locationLevel);
+    }
+
+    public Mob(int left_health, int locationLevel) {
+        createMob(genType(locationLevel), left_health, locationLevel);
     }
 
 
-    public Mob(MobType type, int maxHealth, int locationLevel) {
-        createMob(type, maxHealth, locationLevel);
+    public Mob(String type, int left_health, int locationLevel) {
+        try{
+            createMob(MobType.valueOf(type), left_health, locationLevel);
+        }catch (Exception ignored){
+            createMob(genType(locationLevel), genHealth(locationLevel), locationLevel);
+        }
     }
 
     private int getTrueLocLevel(){
         return (int) (locationLevel / LOCATION_LEVELS_PER_BOSS) + 1;
     }
 
-    private void createMob(MobType type, int maxHealth, int locationLevel){
+    private void createMob(MobType type, int left_health, int locationLevel){
         if(locationLevel <= 0){
             this.locationLevel = 1;
             locationLevel = 1;
         }
-        if(maxHealth <= 0){
-            maxHealth = 10;
-            this.maxHealth = 10;
+        if(left_health <= 0){
+            left_health = 1;
         }
         this.type = type;
-        this.maxHealth = maxHealth;
+        this.maxHealth = genHealth(locationLevel, type);
         this.locationLevel = locationLevel;
-        this.currHealth = maxHealth;
+        this.currHealth = left_health;
         isAlive = true;
     }
 
     private int genHealth(int locationLevel){
+        if(locationLevel <= 0) {
+            this.locationLevel = 1;
+        }
+
+        return (int) (LEVEL_HP_MULT * getTrueLocLevel() * type.getHpMult());
+    }
+
+    private int genHealth(int locationLevel, MobType type){
         if(locationLevel <= 0) {
             this.locationLevel = 1;
         }
@@ -74,6 +89,10 @@ public class Mob {
 
     public boolean isAlive(){
         return isAlive;
+    }
+
+    public String getType(){
+        return type.name();
     }
 
     private MobType genType(int locationLevel){
@@ -115,7 +134,7 @@ public class Mob {
     /**
      *
      * @param damage
-     * @return Returns 'true' if died
+     * @return Returns 'true' if died, 'else' otherwise
      */
     public boolean damage(int damage, int locationLevel, @Nullable Player attacker){
         if(this.currHealth > damage){
