@@ -4,6 +4,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModel
@@ -38,6 +39,9 @@ class KInGameView() : ViewModel() {
 
         val mobIcon = activity.findViewById<ImageView>(R.id.mob_image_view);
         mobIcon.setImageResource(mob.icon);
+
+        val layout = activity.findViewById<ConstraintLayout>(R.id.main_game)
+        layout.setBackgroundResource(R.drawable.sdm_background)
 
         //Button
         mobIcon.setOnClickListener {
