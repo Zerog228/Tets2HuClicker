@@ -234,7 +234,7 @@ public class Mob {
         MIMA("Mima the Forgotten", R.drawable.kedama, 4, 6, 8),
 
         //NPC's
-        NITORI("Nitori Kappashiro", R.drawable.nitori), //Merchant in the shop
+        NITORI("Nitori Kawashiro", R.drawable.nitori), //Merchant in the shop
 
         ;
 
