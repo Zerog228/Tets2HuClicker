@@ -8,6 +8,8 @@ import java.util.Random;
 import me.zerog.tets2huclicker.Player;
 import me.zerog.tets2huclicker.R;
 
+import static me.zerog.tets2huclicker.mob.IntercontinentalMobInfo.*;
+
 public class Mob {
 
     private MobType type;
@@ -207,31 +209,32 @@ public class Mob {
         STAR("Star Sapphire", R.drawable.star),
         LUNA("Luna Child", R.drawable.luna),
         SUNNY("Sunny Milk", R.drawable.sunny),
-        FAIRY("Fairy", R.drawable.fairy, 0.5f, 0.5f, 0.5f),
+        FAIRY("Fairy", R.drawable.fairy, FAIRY_HEALTH, FAIRY_EXP, FAIRY_MONEY),
         WRIGGLE("Wriggle Nightbug", R.drawable.kedama),
         KAGEROU("Kagerou Imaizumi", R.drawable.kagerou), //To add or not to add?
 
         //Both indoor and outdoor
-        KEDAMA("Kedama", R.drawable.kedama, 1.5f, 0, 0),
+        KEDAMA("Kedama", R.drawable.kedama, KEDAMA_HEALTH, KEDAMA_EXP, KEDAMA_MONEY),
 
         //Indoor mobs
-        FAIRY_MAID_ONE("Maid Fairy", R.drawable.fairy, 0.5f, 0.5f, 0.5f),
-        FAIRY_MAID_TWO("Maid Fairy", R.drawable.fairy, 0.5f, 0.5f, 0.5f),
-        FAIRY_MAID_THREE("Maid Fairy", R.drawable.fairy, 0.5f, 0.5f, 0.5f),
+        FAIRY_MAID_ONE("Maid Fairy", R.drawable.fairy, FAIRY_HEALTH, FAIRY_EXP, FAIRY_MONEY),
+        FAIRY_MAID_TWO("Maid Fairy", R.drawable.fairy, FAIRY_HEALTH, FAIRY_EXP, FAIRY_MONEY),
+        FAIRY_MAID_THREE("Maid Fairy", R.drawable.fairy, FAIRY_HEALTH, FAIRY_EXP, FAIRY_MONEY),
         KOAKUMA("Koakuma", R.drawable.kedama),
-        KOISHI("Koishi", R.drawable.kedama, 1.2f, 2.0f, 1f),
+        KOISHI("Koishi", R.drawable.kedama, KOISHI_HEALTH, KOISHI_EXP, KOISHI_MONEY),
+        SATORI("Satori", R.drawable.kedama, SATORI_HEALTH, SATORI_EXP, SATORI_MONEY),
 
         //Bosses
-        RUMIA("Rumia", R.drawable.rumia, 4, 6, 8),
-        CIRNO("Cirno the Wise", R.drawable.cirno, 6, 6, 8),
-        MEILING("Hong Meiling", R.drawable.kedama, 7, 6, 8),
-        PATCHOULI("Patchouli Knowledge", R.drawable.kedama, 4, 6, 8),
-        SAKUYA("Sakuya Izayoi", R.drawable.kedama, 7, 6, 8),
-        REMILIA("Remilia Scarlet", R.drawable.kedama, 9, 6, 8),
-        FLANDRE("Flandre Scarlet", R.drawable.kedama, 12, 6, 8),
+        RUMIA("Rumia", R.drawable.rumia, RUMIA_HEALTH, RUMIA_EXP, RUMIA_MONEY),
+        CIRNO("Cirno the Wise", R.drawable.cirno, CIRNO_HEALTH, CIRNO_EXP, CIRNO_MONEY),
+        MEILING("Hong Meiling", R.drawable.kedama, MEILING_HEALTH, MEILING_EXP, MEILING_MONEY),
+        PATCHOULI("Patchouli Knowledge", R.drawable.kedama, PATCHOULI_HEALTH, PATCHOULI_EXP, PATCHOULI_MONEY),
+        SAKUYA("Sakuya Izayoi", R.drawable.kedama, SAKUYA_HEALTH, SAKUYA_EXP, SAKUYA_MONEY),
+        REMILIA("Remilia Scarlet", R.drawable.kedama, REMILIA_HEALTH, REMILIA_EXP, REMILIA_MONEY),
+        FLANDRE("Flandre Scarlet", R.drawable.kedama, FLANDRE_HEALTH, FLANDRE_EXP, FLANDRE_MONEY),
 
         //Additional bosses
-        MIMA("Mima the Forgotten", R.drawable.kedama, 4, 6, 8),
+        MIMA("Mima the Forgotten", R.drawable.kedama, MIMA_HEALTH, MIMA_EXP, MIMA_MONEY),
 
         //NPC's
         NITORI("Nitori Kawashiro", R.drawable.nitori), //Merchant in the shop
