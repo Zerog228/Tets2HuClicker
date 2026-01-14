@@ -8,6 +8,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import me.zerog.tets2huclicker.MainActivity
 import me.zerog.tets2huclicker.Player
 import me.zerog.tets2huclicker.R
@@ -21,7 +22,11 @@ class KInGameView() : ViewModel() {
     private var mob: Mob? = null
 
     fun showInGameView(activity : AppCompatActivity){
+        ProgressManager.setCurrentMenuType(ProgressManager.CurrentMenuType.MAIN_GAME_SCREEN)
+
         var mob : Mob = getMob()
+
+        var kShopView : KShopView = ViewModelProvider(activity).get(KShopView::class.java)
 
         activity.setContentView(R.layout.activity_game)
         ViewCompat.setOnApplyWindowInsetsListener(activity.findViewById(R.id.main_game)) { v, insets ->
@@ -40,10 +45,25 @@ class KInGameView() : ViewModel() {
         val mobIcon = activity.findViewById<ImageView>(R.id.mob_image_view);
         mobIcon.setImageResource(mob.icon);
 
+        //TODO Image selection based on location level
         val layout = activity.findViewById<ConstraintLayout>(R.id.main_game)
         layout.setBackgroundResource(R.drawable.sdm_background)
 
-        //Button
+        //TODO Bomb logic
+        val bomb_button = activity.findViewById<ImageView>(R.id.bomb_image_view)
+        bomb_button.setOnClickListener {
+
+        }
+
+        val shop_button = activity.findViewById<ImageView>(R.id.shop_image_view)
+        shop_button.setOnClickListener {
+            if(ProgressManager.getGameMode() == ProgressManager.GameMode.LOCAL){
+                ProgressManager.saveProgressOnLocal(activity)
+            }
+            kShopView.showShopView(activity)
+        }
+
+        //Mob button
         mobIcon.setOnClickListener {
             //Anti-cheat
             AntiCheat.addStamp()

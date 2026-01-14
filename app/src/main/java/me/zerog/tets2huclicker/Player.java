@@ -19,6 +19,7 @@ public class Player {
     private int exp;
     private int money;
     private int health;
+    private int bombs;
     private final Map<Upgrade, Integer> upgrades = Arrays.stream(Upgrade.values()).collect(Collectors.toMap(value -> value, value -> 0));
 
     private int last_mob_leftover_hp = 100;
@@ -27,25 +28,25 @@ public class Player {
     private static final int LEVEL_INCREASE_COST_MULT = 20;
 
     public static final String DEF_NAME = "Reimu";
-    public static final int DEF_LEVEL = 1, DEF_EXP = 0, DEF_MONEY = 0, DEF_HEALTH = 10;
+    public static final int DEF_LEVEL = 1, DEF_EXP = 0, DEF_MONEY = 0, DEF_HEALTH = 10, DEF_BOMBS = 3, DEF_LOCATION_LEVEL = 0;
 
     public Player(){
         this(DEF_LEVEL, DEF_EXP, DEF_MONEY, DEF_HEALTH);
     }
 
     public Player(int level, int exp, int money, int health) {
-        this(DEF_NAME, level, exp, money, health, new HashMap<>());
+        this(DEF_NAME, DEF_LOCATION_LEVEL, level, exp, money, health, new HashMap<>(), 0);
     }
 
     public Player(String name, int level, int exp, int money, int health) {
-        this(name, level, exp, money, health, new HashMap<>());
+        this(name, DEF_LOCATION_LEVEL, level, exp, money, health, new HashMap<>(), 0);
     }
 
     public Player(int level, int exp, int money, int health, @Nullable Map<Upgrade, Integer> upgrades){
-        this(DEF_NAME, level, exp, money, health, upgrades);
+        this(DEF_NAME, DEF_LOCATION_LEVEL, level, exp, money, health, upgrades, DEF_BOMBS);
     }
 
-    public Player(String name, int level, int exp, int money, int health, @Nullable Map<Upgrade, Integer> upgrades){
+    public Player(String name, int location_level, int level, int exp, int money, int health, @Nullable Map<Upgrade, Integer> upgrades, int bombs){
         this.name = name;
 
         if(level > DEF_LEVEL){
@@ -63,11 +64,13 @@ public class Player {
         this.money = money;
         this.health = health;
 
+        this.bombs = bombs;
+
         setUpgrades(upgrades);
     }
 
     public static Player copyOf(Player player){
-        Player copy = new Player(player.name, player.level, player.exp, player.money, player.health, player.upgrades);
+        Player copy = new Player(player.name, player.getLocationLevel(), player.level, player.exp, player.money, player.health, player.upgrades, player.getBombs());
         copy.location_level = player.location_level;
         copy.upgrade_points = player.upgrade_points;
         return copy;
@@ -117,6 +120,24 @@ public class Player {
 
     public int getUpgradePoints() {
         return upgrade_points;
+    }
+
+    public int getBombs() {
+        return bombs;
+    }
+
+    public void setBombs(int bombs) {
+        this.bombs = bombs;
+    }
+
+    /**@return Returns Bombs left*/
+    public int increaseBombs() {
+        return ++bombs;
+    }
+
+    /**@return Returns Bombs left*/
+    public int decreaseBombs() {
+        return --bombs;
     }
 
     public int getMoney() {
@@ -172,7 +193,7 @@ public class Player {
         try {
             int upgrade_level = upgrades.get(upgradeType);
             if(upgrade_level < upgradeType.getMaxLevel()){
-                if (removeMoney((upgrade_level + 1) * levelUpCost() + upgrade_level * upgradeType.getAdditionalCostPerLevel())) {
+                if (removeMoney((upgrade_level + 1) * upgradeType.getCost() + upgrade_level * upgradeType.getAdditionalCostPerLevel())) {
                     upgrades.put(upgradeType, ++upgrade_level);
                     return true;
                 } else {
