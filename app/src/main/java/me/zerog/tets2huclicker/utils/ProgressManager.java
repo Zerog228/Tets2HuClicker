@@ -16,12 +16,10 @@ import java.net.URL;
 
 import me.zerog.tets2huclicker.Player;
 import me.zerog.tets2huclicker.mob.Mob;
+import me.zerog.tets2huclicker.player.ServerPlayer;
 
-public class ProgressManager extends AsyncTask<Integer, Void, Player>{
-
-    private static final String USER_AGENT = "Mozilla/5.0";
-    private static final String GET_URL = "http://10.0.2.2:8080/players/";
-    private static Player online_player, local_player, selected_player;
+public class ProgressManager{
+    private static Player local_player, selected_player;
     private static DataStoreSingleton datastore;
 
     private static Mob mob;
@@ -33,15 +31,14 @@ public class ProgressManager extends AsyncTask<Integer, Void, Player>{
 
     //ID's
     private static final String NAME = "P_NAME", LEVEL = "P_LEVEL", EXP = "P_EXP",
-            MONEY = "P_MONEY", HP = "P_HP", UPGRADES = "P_UPGRADES", PLAYER_ID = "P_ID",
+            MONEY = "P_MONEY", HP = "P_HP", UPGRADES = "P_UPGRADES",
             LAST_MOB_TYPE = "MOB_TYPE", MOB_HEALTH = "MOB_HEALTH";
 
-    public static int getPlayerID(AppCompatActivity activity){
+    public static DataStoreSingleton getDatastore(AppCompatActivity activity){
         if(datastore == null){
             datastore = DataStoreSingleton.getInstance(activity);
         }
-
-        return datastore.getOrDefault(PLAYER_ID, 1);
+        return datastore;
     }
 
     public static Mob genMob(){
@@ -73,7 +70,7 @@ public class ProgressManager extends AsyncTask<Integer, Void, Player>{
 
     public static void setGameModeToGlobal(){
         gameMode = GameMode.GLOBAL;
-        selected_player = online_player;
+        selected_player = ServerPlayer.getPlayer();
     }
 
     public static void resetLocalPlayer(){
@@ -81,8 +78,7 @@ public class ProgressManager extends AsyncTask<Integer, Void, Player>{
     }
 
     public static void resetGlobalPlayer(){
-        online_player = new Player();
-        //TODO Reset player on server
+        ServerPlayer.resetGlobalPlayer();
     }
 
     public static void saveProgressOnLocal(AppCompatActivity activity){
@@ -124,68 +120,9 @@ public class ProgressManager extends AsyncTask<Integer, Void, Player>{
         mob_type_name = datastore.getOrDefault(LAST_MOB_TYPE, "Zun");
     }
 
-    //TODO Post on server
-    public static void saveProgressOnServer(Player player){
-
-    }
-
-
-    //TODO Load mobType and leftoverHP from server
-    @Nullable
-    public static Player loadProgressFromServer(int player_id){
-        new ProgressManager().execute(player_id);
-        return online_player;
-    }
-
-    private static String sendGET(int player_id){
-        try{
-            URL obj = new URL(GET_URL+player_id);
-            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-            con.setRequestMethod("GET");
-            con.setRequestProperty("User-Agent", USER_AGENT);
-            int responseCode = con.getResponseCode();
-
-            StringBuilder response = new StringBuilder();
-            if (responseCode == HttpURLConnection.HTTP_OK) { // success
-                try(BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))){
-                    String inputLine;
-
-                    while ((inputLine = in.readLine()) != null) {
-                        response.append(inputLine);
-                    }
-                    //System.out.println("Response - "+response);
-                    return response.toString();
-                }
-            } else {
-                System.out.println("GET request did not work.");
-            }
-        }catch (Exception exception){
-            System.out.println("Failed to send request");
-            exception.printStackTrace();
-        }
-        return null;
-    }
-
-    @Override
-    protected Player doInBackground(Integer... integers) {
-        for(int id : integers){
-            Gson gson = new Gson();
-            return gson.fromJson(sendGET(id), Player.class);
-        }
-        return null;
-    }
-
-    @Override
-    protected void onPostExecute(Player player) {
-        if(player != null){;
-            ProgressManager.online_player = Player.copyOf(player);
-            super.onPostExecute(player);
-        }
-    }
-
     @Nullable
     public static Player getOnlinePlayer(){
-        return online_player;
+        return ServerPlayer.getPlayer();
     }
 
     @Nullable

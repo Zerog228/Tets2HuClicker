@@ -1,4 +1,4 @@
-package me.zerog.tets2huclicker.mob;
+package me.zerog.tets2huclicker.utils;
 
 public class IntercontinentalMobInfo {
 

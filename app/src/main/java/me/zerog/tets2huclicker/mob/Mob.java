@@ -8,7 +8,7 @@ import java.util.Random;
 import me.zerog.tets2huclicker.Player;
 import me.zerog.tets2huclicker.R;
 
-import static me.zerog.tets2huclicker.mob.IntercontinentalMobInfo.*;
+import static me.zerog.tets2huclicker.utils.IntercontinentalMobInfo.*;
 
 public class Mob {
 

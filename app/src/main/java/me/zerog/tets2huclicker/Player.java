@@ -209,8 +209,7 @@ public class Player {
         return new Gson().toJson(upgrades);
 
     }
-
-
+    
     public static Map<Upgrade, Integer> stringToUpgrades(String upgrades){
         return new Gson().fromJson(upgrades, HashMap.class);
     }
