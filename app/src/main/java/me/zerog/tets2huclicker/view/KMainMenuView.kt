@@ -15,13 +15,8 @@ import me.zerog.tets2huclicker.utils.ProgressManager
 
 class KMainMenuView : ViewModel() {
 
-    private var menu_type : CurrentMenuType = CurrentMenuType.MAIN_MENU;
-
-    fun getMenu() : CurrentMenuType{
-        return menu_type;
-    }
-
     fun showMainMenuView(activity : AppCompatActivity){
+        ProgressManager.setCurrentMenuType(ProgressManager.CurrentMenuType.MAIN_MENU)
         //var online_player : Player = ProgressManager.getOnlinePlayer();
 
         activity.setContentView(R.layout.activity_main_menu)
@@ -40,7 +35,7 @@ class KMainMenuView : ViewModel() {
 
         //Select local player
         select_local_user_button.setOnClickListener {
-            menu_type = CurrentMenuType.MAIN_GAME_SCREEN;
+            ProgressManager.setCurrentMenuType(ProgressManager.CurrentMenuType.MAIN_GAME_SCREEN)
             ProgressManager.setGameModeToLocal()
             kInGameView.showInGameView(activity)
         }
@@ -48,7 +43,7 @@ class KMainMenuView : ViewModel() {
         //Reset local player
         reset_local_user_button.setOnClickListener {
             deletePlayerDialog(activity, {
-                ProgressManager.resetLocalPlayer()
+                ProgressManager.resetLocalPlayer(activity)
             })
         }
 
@@ -68,7 +63,7 @@ class KMainMenuView : ViewModel() {
         //Online player selection
         select_online_player_button.setOnClickListener {
             if(ProgressManager.getOnlinePlayer() != null){
-                menu_type = CurrentMenuType.MAIN_GAME_SCREEN;
+                ProgressManager.setCurrentMenuType(ProgressManager.CurrentMenuType.MAIN_GAME_SCREEN)
                 ProgressManager.setGameModeToGlobal();
 
                 kInGameView.showInGameView(activity)
@@ -81,12 +76,6 @@ class KMainMenuView : ViewModel() {
                 ProgressManager.resetGlobalPlayer();
             })
         }
-    }
-
-    enum class CurrentMenuType(){
-        MAIN_MENU,
-        MAIN_GAME_SCREEN,
-        SHOP_SCREEN
     }
 
     fun getPlayerString(player : Player?) : String{
@@ -113,7 +102,7 @@ class KMainMenuView : ViewModel() {
 
         val confirm_player_deletion = alert.findViewById<Button>(R.id.confirm_deletion_button);
         confirm_player_deletion.setOnClickListener {
-            deleteUser;
+            deleteUser();
             alert.dismiss()
         }
 
