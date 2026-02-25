@@ -87,9 +87,11 @@ public class ServerPlayer{
         params.addJSONBodyValue("password", password);
         params.addJSONBodyValue("email", email);
 
+
         //Send communication
         //System.out.println("Sent /signup");
-        communicator.run(communicator.getParams().withPostfix("/signup", ServerCommunicator.ReqMethod.POST));
+        communicator.setParams(params); //Is this really needed?
+        communicator.run(params.withPostfix("/signup", ServerCommunicator.ReqMethod.POST));
     }
 
     public static void signIn(boolean showAlert){
@@ -108,7 +110,8 @@ public class ServerPlayer{
             });
 
             //Send communication
-            communicator.run(communicator.getParams().withPostfix("/signin"));
+            communicator.setParams(params); //Is this really needed?
+            communicator.run(params.withPostfix("/signin"));
         }else if(showAlert) {
             alert.show();
         }

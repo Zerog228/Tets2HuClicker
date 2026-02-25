@@ -1,5 +1,7 @@
 package me.zerog.tets2huclicker.utils;
 
+import static java.net.HttpURLConnection.HTTP_OK;
+
 import android.os.AsyncTask;
 
 import androidx.annotation.Nullable;
@@ -8,6 +10,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.ConnectException;
@@ -82,8 +85,6 @@ public class ServerCommunicator <Progress, Result>{
             //Add headers to a request
             params.headers.forEach(con::setRequestProperty);
 
-            System.out.println("Pre-body connection: "+con);
-
             //Add body to a request
             if(params.getJSONBodyString() != null){
                 try(OutputStream os = con.getOutputStream()) {
@@ -92,22 +93,36 @@ public class ServerCommunicator <Progress, Result>{
                 }
             }
             int responseCode = con.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) { // success
-                System.out.println(con);
-                System.out.println("Response code - "+responseCode);
-                System.out.println("Input stream - "+con.getInputStream());
-                StringBuilder response = new StringBuilder();
-                try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
-                    String inputLine;
+            //TODO Fix "Message : {"mesage":"Error: ..."}"
+            //TODO При повторной попытке залогиниться показывает сообщение с предыдущего раза
+            String response = appendResponse(con, true);
 
-                    while ((inputLine = in.readLine()) != null) {
-                        response.append(inputLine);
-                    }
-                    return response.toString();
-                }
-            } else {
-                throw new ConnectException("Request did not work. Response code: "+responseCode);
+            if(responseCode == HTTP_OK){
+                return response;
+            }else{
+                throw new ConnectException("Request did not work. Response code: "+responseCode+". \nMessage: "+response);
             }
+        }
+    }
+
+    /**
+     * Converts response input stream into a String
+     * @return Returns response String, "" otherwise
+     * @throws Exception on incorrect input stream
+     * */
+    private static String appendResponse(HttpURLConnection connection, boolean ignoreException) throws Exception{
+        StringBuilder response = new StringBuilder();
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getResponseCode() == HTTP_OK ? connection.getInputStream() : connection.getErrorStream()))) {
+            String inputLine;
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            return response.toString();
+        }catch (Exception ignored){
+            if(ignoreException)
+                return "";
+            throw new ConnectException("Response building failed!");
         }
     }
 
