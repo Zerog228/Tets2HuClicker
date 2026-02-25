@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import me.zerog.tets2huclicker.utils.DataStoreSingleton
 import me.zerog.tets2huclicker.utils.ProgressManager
 import me.zerog.tets2huclicker.view.KInGameView
 import me.zerog.tets2huclicker.view.KMainMenuView
@@ -22,8 +21,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        ProgressManager.loadProgressFromServer(ProgressManager.getPlayerID(this))
-        ProgressManager.loadProgressFromLocal(this)
+        ProgressManager.init(this);
 
         var kMainMenuView : KMainMenuView = ViewModelProvider(this).get(KMainMenuView::class.java)
         var kInGameView : KInGameView = ViewModelProvider(this).get(KInGameView::class.java)

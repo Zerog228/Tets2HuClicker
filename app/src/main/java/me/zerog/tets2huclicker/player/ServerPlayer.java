@@ -2,34 +2,67 @@ package me.zerog.tets2huclicker.player;
 
 import static me.zerog.tets2huclicker.utils.ProgressManager.getDatastore;
 
-import android.os.AsyncTask;
+import android.content.DialogInterface;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.gson.Gson;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import me.zerog.tets2huclicker.Player;
+import me.zerog.tets2huclicker.mob.Mob;
+import me.zerog.tets2huclicker.utils.DataStoreSingleton;
+import me.zerog.tets2huclicker.utils.Executable;
+import me.zerog.tets2huclicker.utils.ServerCommunicator;
 
-public class ServerPlayer extends AsyncTask<Integer, Void, Player> {
+public class ServerPlayer{
+    //Server communication
+    private static ServerCommunicator<Void, HashMap> communicator;
+    private static ServerCommunicator.ReqParams params = new ServerCommunicator.ReqParams("http://10.0.2.2:8080/api/auth");
+    private static HashMap<String, String> communicationResponce = new HashMap<>();
 
-    private static final String PLAYER_ID = "P_ID";
-    private static final String USER_AGENT = "Mozilla/5.0";
-    private static final String GET_URL = "http://10.0.2.2:8080/players/";
+    //Player data
+    private static Player player;
+    private static List<Mob> mobsQueue = new ArrayList<>(); //TODO Maybe replace it with a Queue?
+    private static DataStoreSingleton datastore;
+    private static final String LOGIN = "user_login", PASSWORD = "user_password", MAIL = "user_mail";
+    private static AlertDialog alert;
+    //Authorization
+    private static final String AUTHORIZATION_HEADER_KEY = "Authorization", ACCESS_TOKEN_KEY = "accessToken", TOKEN_TYPE_KEY = "tokenType";
+    private static String authorizationHeader = "";
 
-    private static Player online_player;
+    //Other
+    @Nullable
+    private static Executable<Void, Void> postResponseAction;
 
-    public static Player getPlayer(){
-        return online_player;
-    }
+    public static void init(AppCompatActivity activity){
+        if(datastore == null){
+            datastore = getDatastore(activity);
+        }
 
-    public static int getPlayerID(AppCompatActivity activity){
-        return getDatastore(activity).getOrDefault(PLAYER_ID, 1);
+        communicator = new ServerCommunicator<>(
+                params, HashMap.class,
+                null,
+                null
+        );
+
+        alert = new AlertDialog.Builder(activity)
+                .setTitle("No online account")
+                .setMessage("You don't have online account")
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        //
+                    }
+                })
+
+                // A null listener allows the button to dismiss the dialog and take no further action.
+                .setNegativeButton(android.R.string.cancel, null)
+                .setIconAttribute(android.R.attr.alertDialogIcon).create();
+
+        signIn(false);
     }
 
     //TODO Post on server
@@ -37,62 +70,75 @@ public class ServerPlayer extends AsyncTask<Integer, Void, Player> {
 
     }
 
-    public static void resetGlobalPlayer(){
-        online_player = new Player();
+    public static void signUp(String name, String password, String email, @Nullable Executable<HashMap<String, String>, Void> postResponseAction, @Nullable Executable<Exception, Void> postFailAction){
+        communicator.setPostExecuteSuccess(map -> {
+            fillResponse(map);
+            if(postResponseAction != null){
+                postResponseAction.execute(map); //TODO If registered successfully -> save login + password. otherwise show alert
+            }
+        });
+        communicator.setPostExecuteFail(response -> {
+            if(postFailAction != null){
+                postFailAction.execute(response);
+            }
+        });
+
+        params.addJSONBodyValue("username", name);
+        params.addJSONBodyValue("password", password);
+        params.addJSONBodyValue("email", email);
+
+        //Send communication
+        //System.out.println("Sent /signup");
+        communicator.run(communicator.getParams().withPostfix("/signup", ServerCommunicator.ReqMethod.POST));
+    }
+
+    public static void signIn(boolean showAlert){
+        //If user exists
+        if(datastore.hasKey(LOGIN)){
+            params.addJSONBodyValue("username", datastore.getStringValue(LOGIN)); //Login
+            params.addJSONBodyValue("password", datastore.getStringValue(PASSWORD)); //Password
+
+            //Fill player and call outer method
+            communicator.setPostExecuteSuccess(map -> {
+                fillResponse(map);
+                buildPlayer();
+                if(postResponseAction != null){
+                    postResponseAction.execute();
+                }
+            });
+
+            //Send communication
+            communicator.run(communicator.getParams().withPostfix("/signin"));
+        }else if(showAlert) {
+            alert.show();
+        }
+    }
+
+    public static void resetPlayer(){
+        player = new Player();
         //TODO Reset player on server
     }
 
-
-    //TODO Load mobType and leftoverHP from server
-    @Nullable
-    public static Player loadProgressFromServer(int player_id){
-        new ServerPlayer().execute(player_id);
-        return online_player;
-    }
-
-    private static String sendGET(int player_id){
-        try{
-            URL obj = new URL(GET_URL+player_id);
-            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-            con.setRequestMethod("GET");
-            con.setRequestProperty("User-Agent", USER_AGENT);
-            int responseCode = con.getResponseCode();
-
-            StringBuilder response = new StringBuilder();
-            if (responseCode == HttpURLConnection.HTTP_OK) { // success
-                try(BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()))){
-                    String inputLine;
-
-                    while ((inputLine = in.readLine()) != null) {
-                        response.append(inputLine);
-                    }
-                    //System.out.println("Response - "+response);
-                    return response.toString();
-                }
-            } else {
-                System.out.println("GET request did not work.");
-            }
-        }catch (Exception exception){
-            System.out.println("Failed to send request");
-            exception.printStackTrace();
-        }
+    public static Mob getMob(){
+        //TODO Gen mob
         return null;
     }
 
-    @Override
-    protected Player doInBackground(Integer... integers) {
-        for(int id : integers){
-            Gson gson = new Gson();
-            return gson.fromJson(sendGET(id), Player.class);
-        }
-        return null;
+    private static void buildPlayer(){
+        //TODO build player from response. Нужна проверка на то, можно ли создать игрока из полученной информации
+        //player = ...
     }
 
-    @Override
-    protected void onPostExecute(Player player) {
-        if(player != null){;
-            online_player = Player.copyOf(player);
-            super.onPostExecute(player);
-        }
+    private static void fillResponse(HashMap<String, String> response){
+        System.out.println("Filled response!");
+        communicationResponce = new HashMap<String, String>(response);
+    }
+
+    public static Player getPlayer(){
+        return player;
+    }
+
+    public static void setPostResponseAction(@Nullable Executable<Void, Void> postResponseAction){
+        ServerPlayer.postResponseAction = postResponseAction;
     }
 }

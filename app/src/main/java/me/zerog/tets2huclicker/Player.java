@@ -231,8 +231,15 @@ public class Player {
 
     }
     
-    public static Map<Upgrade, Integer> stringToUpgrades(String upgrades){
+    public static HashMap<Upgrade, Integer> stringToUpgrades(String upgrades){
         return new Gson().fromJson(upgrades, HashMap.class);
+    }
+
+    public String getLastMobType(){
+        return last_mob_type;
+    }
+    public void setLastMobType(String last_mob_type){
+        this.last_mob_type = last_mob_type;
     }
 
 

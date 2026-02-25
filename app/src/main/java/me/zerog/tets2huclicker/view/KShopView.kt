@@ -21,7 +21,7 @@ class KShopView : ViewModel() {
             insets
         }
 
-        ProgressManager.setCurrentMenuType(ProgressManager.CurrentMenuType.SHOP_SCREEN)
+        ProgressManager.setCurrentMenuType(ProgressManager.CurrentMenuType.SHOP_SCREEN) //TODO NullPointerException? (setText() on widget)
         var kInGameView : KInGameView = ViewModelProvider(activity).get(KInGameView::class.java)
 
         val return_button = activity.findViewById<ImageView>(R.id.return_to_battle_image_view);

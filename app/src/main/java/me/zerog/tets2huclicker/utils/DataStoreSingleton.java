@@ -16,6 +16,7 @@ import androidx.datastore.rxjava3.RxDataStore;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import io.reactivex.rxjava3.core.Single;
 
@@ -99,6 +100,13 @@ public class DataStoreSingleton {
         Single<String> value = datastore.data().firstOrError().map(prefs -> prefs.get(PREF_KEY)).onErrorReturnItem("null");
         String returnable = value.blockingGet();
         return returnable.equals("null") ? def : returnable;
+    }
+
+    public boolean hasKey(String key){
+        Preferences.Key<String> PREF_KEY = PreferencesKeys.stringKey(key);
+        Single<String> value = datastore.data().firstOrError().map(prefs -> prefs.get(PREF_KEY)).onErrorReturnItem("null");
+        String returnable = value.blockingGet();
+        return !Objects.equals(value.blockingGet(), "null");
     }
 
     public int getOrDefault(String key, int def){

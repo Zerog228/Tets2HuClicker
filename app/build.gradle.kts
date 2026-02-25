@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    //kotlin("plugin.lombok") version "1.8.10"
+    //id("io.freefair.lombok") version "9.2.0"
 }
 
 android {
@@ -49,6 +51,9 @@ dependencies {
 
     implementation(libs.androidx.datastore.preferences.core)
     implementation(libs.androidx.datastore.preferences.rxjava3)
+
+    //compileOnly(libs.lombok)
+    //annotationProcessor(libs.lombok)
 
     implementation(libs.gson)
 }
