@@ -29,14 +29,9 @@ public class ServerPlayer{
     private static List<Mob> mobsQueue = new ArrayList<>(); //TODO Maybe replace it with a Queue?
     private static DataStoreSingleton datastore;
     private static final String LOGIN = "user_login", PASSWORD = "user_password", MAIL = "user_mail";
-    private static AlertDialog alert;
     //Authorization
     private static final String AUTHORIZATION_HEADER_KEY = "Authorization", ACCESS_TOKEN_KEY = "accessToken", TOKEN_TYPE_KEY = "tokenType";
     private static String authorizationHeader = "";
-
-    //Other
-    @Nullable
-    private static Executable<Void, Void> postResponseAction;
 
     public static void init(AppCompatActivity activity){
         if(datastore == null){
@@ -49,20 +44,7 @@ public class ServerPlayer{
                 null
         );
 
-        alert = new AlertDialog.Builder(activity)
-                .setTitle("No online account")
-                .setMessage("You don't have online account")
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        //
-                    }
-                })
-
-                // A null listener allows the button to dismiss the dialog and take no further action.
-                .setNegativeButton(android.R.string.cancel, null)
-                .setIconAttribute(android.R.attr.alertDialogIcon).create();
-
-        signIn(false);
+        signIn();
     }
 
     //TODO Post on server
@@ -75,6 +57,7 @@ public class ServerPlayer{
             fillResponse(map);
             if(postResponseAction != null){
                 postResponseAction.execute(map); //TODO If registered successfully -> save login + password. otherwise show alert
+                signIn();
             }
         });
         communicator.setPostExecuteFail(response -> {
@@ -90,31 +73,46 @@ public class ServerPlayer{
 
         //Send communication
         //System.out.println("Sent /signup");
-        communicator.setParams(params); //Is this really needed?
+        //communicator.setParams(params); //Is this really needed?
         communicator.run(params.withPostfix("/signup", ServerCommunicator.ReqMethod.POST));
     }
 
-    public static void signIn(boolean showAlert){
+    public static void signIn(){
+        signIn(null);
+    }
+
+    public static void signIn(@Nullable Executable<HashMap<String, String>, Void> postSuccessAction){
         //If user exists
         if(datastore.hasKey(LOGIN)){
             params.addJSONBodyValue("username", datastore.getStringValue(LOGIN)); //Login
             params.addJSONBodyValue("password", datastore.getStringValue(PASSWORD)); //Password
 
-            //Fill player and call outer method
+            //Fill player related fields and call outer method
             communicator.setPostExecuteSuccess(map -> {
                 fillResponse(map);
                 buildPlayer();
-                if(postResponseAction != null){
-                    postResponseAction.execute();
+                if(postSuccessAction != null){
+                    postSuccessAction.execute();
                 }
             });
 
             //Send communication
-            communicator.setParams(params); //Is this really needed?
+            //communicator.setParams(params); //Is this really needed?
             communicator.run(params.withPostfix("/signin"));
-        }else if(showAlert) {
-            alert.show();
         }
+    }
+
+    public static void savePlayerCredentials(String login, String password){
+        datastore.setValue(LOGIN, login);
+        datastore.setValue(PASSWORD, password);
+    }
+
+    public static String getLogin(){
+        return datastore.getOrDefault(LOGIN, "");
+    }
+
+    public static String getPassword(){
+        return datastore.getOrDefault(PASSWORD, "");
     }
 
     public static void resetPlayer(){
@@ -133,7 +131,7 @@ public class ServerPlayer{
     }
 
     private static void fillResponse(HashMap<String, String> response){
-        System.out.println("Filled response!");
+        //System.out.println("Filled response!");
         communicationResponce = new HashMap<String, String>(response);
     }
 
@@ -141,7 +139,11 @@ public class ServerPlayer{
         return player;
     }
 
-    public static void setPostResponseAction(@Nullable Executable<Void, Void> postResponseAction){
-        ServerPlayer.postResponseAction = postResponseAction;
+    public static String getAuthorizationHeader() {
+        return authorizationHeader;
+    }
+
+    public static void setAuthorizationHeader(String authorizationHeader) {
+        ServerPlayer.authorizationHeader = authorizationHeader;
     }
 }

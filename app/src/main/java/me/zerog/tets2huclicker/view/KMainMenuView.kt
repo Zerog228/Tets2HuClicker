@@ -61,26 +61,19 @@ class KMainMenuView : ViewModel() {
         val password_input_field = activity.findViewById<TextView>(R.id.password_input_field);
         val email_input_field = activity.findViewById<TextView>(R.id.email_input_field);
         val signupButton = activity.findViewById<Button>(R.id.signup_button);
+        username_input_field.text = ServerPlayer.getLogin()
+        password_input_field.text = ServerPlayer.getPassword()
+
         signupButton.setOnClickListener { //TODO Verify all the fields
             val successAction = object : Executable<HashMap<String, String>, Void>{
-                override fun execute() {
-                    activity.runOnUiThread {
-                        alert.setTitle("Registered user successfully!")
-                        alert.setMessage(username_input_field.text)
-                        alert.show()
-                    }
-                }
+                override fun execute() {}
                 override fun execute(`in_`: HashMap<String, String>?): Void? {
                     activity.runOnUiThread {
-                        alert.setTitle("Registered user successfully!")
+                        alert.setTitle(in_?.get("message"))
                         alert.setMessage(username_input_field.text)
                         alert.show()
                     }
-                    //Response: {message=User registered successfully!}
-                    if(in_ != null){
-                        println(in_.toString())
-                        //TODO If responce is 'OK' -> save this fields in memory
-                    }
+                    ServerPlayer.savePlayerCredentials(username_input_field.text.toString(), password_input_field.text.toString());
                     return null;
                 }
             };
@@ -123,10 +116,8 @@ class KMainMenuView : ViewModel() {
                     return null;
                 }
             };
-            ServerPlayer.setPostResponseAction(executable);
 
-            ServerPlayer.signIn(true);
-            global_player_text_view.setText(getPlayerString(ProgressManager.getOnlinePlayer(), "Player not found! Try refreshing connection"))
+            //TODO
         }
 
         //Online player selection

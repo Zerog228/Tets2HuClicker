@@ -100,7 +100,7 @@ public class ServerCommunicator <Progress, Result>{
             if(responseCode == HTTP_OK){
                 return response;
             }else{
-                throw new ConnectException("Request did not work. Response code: "+responseCode+". \nMessage: "+response);
+                throw new ConnectException("Request did not work. Response code: "+responseCode+". \nMessage: "+ ((Map<String, String>) new Gson().fromJson(response, Map.class)).get("message"));
             }
         }
     }

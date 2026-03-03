@@ -80,7 +80,7 @@ public class ProgressManager{
     }
 
     public static void loadProgressFormServer(AppCompatActivity activity){
-        ServerPlayer.signIn(true);
+        ServerPlayer.signIn();
     }
 
     @Nullable
