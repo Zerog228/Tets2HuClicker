@@ -2,7 +2,6 @@ package me.zerog.tets2huclicker.player;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import me.zerog.tets2huclicker.Player;
 import me.zerog.tets2huclicker.mob.Mob;
 import me.zerog.tets2huclicker.utils.DataStoreSingleton;
 import me.zerog.tets2huclicker.utils.ProgressManager;

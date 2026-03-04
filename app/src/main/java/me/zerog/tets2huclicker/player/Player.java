@@ -1,5 +1,6 @@
-package me.zerog.tets2huclicker;
+package me.zerog.tets2huclicker.player;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.gson.Gson;
@@ -7,7 +8,6 @@ import com.google.gson.Gson;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class Player {
@@ -208,7 +208,7 @@ public class Player {
         }
     }
 
-    private void setUpgrades(Map<Upgrade, Integer> upgrades) {
+    public void setUpgrades(Map<Upgrade, Integer> upgrades) {
         if (upgrades != null && !upgrades.isEmpty()) {
             for (Upgrade upgrade : this.upgrades.keySet()) {
                 if (upgrades.containsKey(upgrade))
@@ -242,6 +242,17 @@ public class Player {
         this.last_mob_type = last_mob_type;
     }
 
+    @NonNull
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(name).append("\n")
+                .append("loc:").append(location_level).append(" lvl:").append(level).append(" uP:").append(upgrade_points).append("\n")
+                .append("exp:").append(exp).append(" money:").append(money).append(" health:").append(health).append(" bombs:").append(bombs).append("\n")
+                .append(upgradesToString()).append("\n")
+                .append("mobHP:").append(last_mob_leftover_hp).append(" ").append(last_mob_type);
+        return builder.toString();
+    }
 
     public enum Upgrade {
         LONGER_STICK(5, 15, 1, 15, 1f), //Damage upgrade

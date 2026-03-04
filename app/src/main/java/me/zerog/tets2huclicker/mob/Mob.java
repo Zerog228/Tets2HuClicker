@@ -5,7 +5,7 @@ import androidx.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
 
-import me.zerog.tets2huclicker.Player;
+import me.zerog.tets2huclicker.player.Player;
 import me.zerog.tets2huclicker.R;
 
 import static me.zerog.tets2huclicker.utils.IntercontinentalMobInfo.*;

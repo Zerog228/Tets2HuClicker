@@ -2,17 +2,15 @@ package me.zerog.tets2huclicker.player;
 
 import static me.zerog.tets2huclicker.utils.ProgressManager.getDatastore;
 
-import android.content.DialogInterface;
-
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import me.zerog.tets2huclicker.Player;
 import me.zerog.tets2huclicker.mob.Mob;
 import me.zerog.tets2huclicker.utils.DataStoreSingleton;
 import me.zerog.tets2huclicker.utils.Executable;
@@ -28,10 +26,12 @@ public class ServerPlayer{
     private static Player player;
     private static List<Mob> mobsQueue = new ArrayList<>(); //TODO Maybe replace it with a Queue?
     private static DataStoreSingleton datastore;
-    private static final String LOGIN = "user_login", PASSWORD = "user_password", MAIL = "user_mail";
+
     //Authorization
+    private static final String LOGIN = "user_login", PASSWORD = "user_password", MAIL = "user_mail";
     private static final String AUTHORIZATION_HEADER_KEY = "Authorization", ACCESS_TOKEN_KEY = "accessToken", TOKEN_TYPE_KEY = "tokenType";
-    private static String authorizationHeader = "";
+    private static String authToken;
+    private static String authTokenType;
 
     public static void init(AppCompatActivity activity){
         if(datastore == null){
@@ -78,10 +78,18 @@ public class ServerPlayer{
     }
 
     public static void signIn(){
-        signIn(null);
+        signIn(null, null);
     }
 
-    public static void signIn(@Nullable Executable<HashMap<String, String>, Void> postSuccessAction){
+    public static void signIn(@Nullable String login, @Nullable String password, @Nullable Executable<HashMap<String, String>, Void> postSuccessAction, @Nullable Executable<Exception, Void> postFailAction){
+        if(!datastore.hasKey(LOGIN) && login != null && password != null && !login.isEmpty() && !password.isEmpty()){
+            datastore.setValue(LOGIN, login);
+            datastore.setValue(PASSWORD, password);
+        }
+        signIn(postSuccessAction, postFailAction);
+    }
+
+    public static void signIn(@Nullable Executable<HashMap<String, String>, Void> postSuccessAction, @Nullable Executable<Exception, Void> postFailAction){
         //If user exists
         if(datastore.hasKey(LOGIN)){
             params.addJSONBodyValue("username", datastore.getStringValue(LOGIN)); //Login
@@ -90,9 +98,14 @@ public class ServerPlayer{
             //Fill player related fields and call outer method
             communicator.setPostExecuteSuccess(map -> {
                 fillResponse(map);
-                buildPlayer();
+                buildPlayer(map);
                 if(postSuccessAction != null){
-                    postSuccessAction.execute();
+                    postSuccessAction.execute(map);
+                }
+            });
+            communicator.setPostExecuteFail(response -> {
+                if(postFailAction != null){
+                    postFailAction.execute(response);
                 }
             });
 
@@ -125,7 +138,21 @@ public class ServerPlayer{
         return null;
     }
 
-    private static void buildPlayer(){
+    private static void buildPlayer(HashMap<String, String> map){
+        System.out.println(map);
+        Gson gson = new Gson();
+        try{
+            //Player converted = ;
+            player = Player.copyOf(gson.fromJson(map.toString(), Player.class)); //TODO Some values are not copied properly! Check which values and fix it
+            player.setName(map.get("username"));
+            player.setUpgrades(Player.stringToUpgrades(map.get("abilities_map")));
+            //System.out.println(player);
+            authToken = map.get(ACCESS_TOKEN_KEY);
+            authTokenType = map.get(TOKEN_TYPE_KEY);
+        }catch (Exception e){
+            System.out.println("Failed to convert player from JSON!");
+            e.printStackTrace();
+        }
         //TODO build player from response. Нужна проверка на то, можно ли создать игрока из полученной информации
         //player = ...
     }
@@ -139,11 +166,11 @@ public class ServerPlayer{
         return player;
     }
 
-    public static String getAuthorizationHeader() {
-        return authorizationHeader;
+    public static String getAuthToken() {
+        return authToken;
     }
 
-    public static void setAuthorizationHeader(String authorizationHeader) {
-        ServerPlayer.authorizationHeader = authorizationHeader;
+    public static String getAuthTokenType() {
+        return authTokenType;
     }
 }

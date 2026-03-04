@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import org.jetbrains.annotations.NotNull;
 
-import me.zerog.tets2huclicker.Player;
+import me.zerog.tets2huclicker.player.Player;
 import me.zerog.tets2huclicker.mob.Mob;
 import me.zerog.tets2huclicker.player.LocalPlayer;
 import me.zerog.tets2huclicker.player.ServerPlayer;

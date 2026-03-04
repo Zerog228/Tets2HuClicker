@@ -9,8 +9,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import me.zerog.tets2huclicker.MainActivity
-import me.zerog.tets2huclicker.Player
+import me.zerog.tets2huclicker.player.Player
 import me.zerog.tets2huclicker.R
 import me.zerog.tets2huclicker.mob.Mob
 import me.zerog.tets2huclicker.security.AntiCheat

@@ -9,7 +9,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import me.zerog.tets2huclicker.Player
+import me.zerog.tets2huclicker.player.Player
 import me.zerog.tets2huclicker.R
 import me.zerog.tets2huclicker.player.ServerPlayer
 import me.zerog.tets2huclicker.utils.Executable
@@ -50,8 +50,32 @@ class KMainMenuView : ViewModel() {
             })
         }
 
+        //Online player selection
+        val select_online_player_button = activity.findViewById<Button>(R.id.select_online_player);
+        val refresh_online_player_button = activity.findViewById<Button>(R.id.refresh_online_player);
+        val reset_global_user_button = activity.findViewById<Button>(R.id.reset_progress_server_button);
+        val global_player_text_view = activity.findViewById<TextView>(R.id.global_player_text_view);
+        global_player_text_view.setText(getPlayerString(ProgressManager.getOnlinePlayer(), "Player not found! Try refreshing connection"))
+
+        //Online player selection logic
+        select_online_player_button.setOnClickListener {
+            if(ProgressManager.getOnlinePlayer() != null){
+                ProgressManager.setCurrentMenuType(ProgressManager.CurrentMenuType.MAIN_GAME_SCREEN)
+                ProgressManager.setGameModeToGlobal();
+
+                kInGameView.showInGameView(activity)
+            }
+        }
+
+        //Delete user on server
+        reset_global_user_button.setOnClickListener {
+            deletePlayerDialog(activity, {
+                ProgressManager.resetOnlinePlayer();
+            })
+        }
+
         //Alert dialog
-        var alert = AlertDialog.Builder(activity)
+        var loginAlert = AlertDialog.Builder(activity)
             .setTitle("Error on getting user")
             .setMessage("Error")
             .create();
@@ -69,11 +93,12 @@ class KMainMenuView : ViewModel() {
                 override fun execute() {}
                 override fun execute(`in_`: HashMap<String, String>?): Void? {
                     activity.runOnUiThread {
-                        alert.setTitle(in_?.get("message"))
-                        alert.setMessage(username_input_field.text)
-                        alert.show()
+                        loginAlert.setTitle(in_?.get("message"))
+                        loginAlert.setMessage(username_input_field.text)
+                        loginAlert.show()
                     }
                     ServerPlayer.savePlayerCredentials(username_input_field.text.toString(), password_input_field.text.toString());
+                    ServerPlayer.signIn()
                     return null;
                 }
             };
@@ -81,25 +106,54 @@ class KMainMenuView : ViewModel() {
                 override fun execute() {}
                 override fun execute(`in_`: Exception?): Void? {
                     activity.runOnUiThread {
-                        alert.setMessage(in_?.message.toString())
-                        alert.show()
+                        loginAlert.setMessage(in_?.message.toString())
+                        loginAlert.show()
+                    }
+                    //in_?.printStackTrace()
+                    return null;
+                }
+            };
+            //println("User data: "+username_input_field.text.toString())
+            ServerPlayer.signUp(username_input_field.text.toString(), password_input_field.text.toString(), email_input_field.text.toString(), successAction, failAction)
+        }
+
+        //Logging in
+        val loginButton = activity.findViewById<Button>(R.id.login_button);
+        loginButton.setOnClickListener {
+            if(ServerPlayer.getLogin().length == 0 && (username_input_field.text.toString().length == 0 || password_input_field.text.toString().length == 0)){
+                loginAlert.setMessage("Fill credentials first!")
+                loginAlert.show();
+                return@setOnClickListener;
+            }
+
+            val successAction = object : Executable<HashMap<String, String>, Void>{
+                override fun execute() {}
+                override fun execute(`in_`: HashMap<String, String>?): Void? {
+                    activity.runOnUiThread {
+                        loginAlert.setTitle(in_?.get("message"))
+                        loginAlert.setMessage("Logged in!")
+                        loginAlert.show()
+                    }
+                    global_player_text_view.text = getPlayerString(ServerPlayer.getPlayer())
+                    return null;
+                }
+            };
+            val failAction = object : Executable<Exception, Void>{
+                override fun execute() {}
+                override fun execute(`in_`: Exception?): Void? {
+                    activity.runOnUiThread {
+                        loginAlert.setMessage(in_?.message.toString())
+                        loginAlert.show()
                     }
                     in_?.printStackTrace()
                     return null;
                 }
             };
-            println("User data: "+username_input_field.text.toString())
-            ServerPlayer.signUp(username_input_field.text.toString(), password_input_field.text.toString(), email_input_field.text.toString(), successAction, failAction)
+            //Saving provided credentials
+            //ServerPlayer.savePlayerCredentials(username_input_field.text.toString(), password_input_field.text.toString())
+
+            ServerPlayer.signIn(username_input_field.text.toString(), password_input_field.text.toString(), successAction, failAction)
         }
-
-        val loginButton = activity.findViewById<Button>(R.id.login_button);
-
-        //Online user selection
-        val select_online_player_button = activity.findViewById<Button>(R.id.select_online_player);
-        val refresh_online_player_button = activity.findViewById<Button>(R.id.refresh_online_player);
-        val reset_global_user_button = activity.findViewById<Button>(R.id.reset_progress_server_button);
-        val global_player_text_view = activity.findViewById<TextView>(R.id.global_player_text_view);
-        global_player_text_view.setText(getPlayerString(ProgressManager.getOnlinePlayer(), "Player not found! Try refreshing connection"))
 
         //refresh
         refresh_online_player_button.setOnClickListener {
@@ -118,23 +172,6 @@ class KMainMenuView : ViewModel() {
             };
 
             //TODO
-        }
-
-        //Online player selection
-        select_online_player_button.setOnClickListener {
-            if(ProgressManager.getOnlinePlayer() != null){
-                ProgressManager.setCurrentMenuType(ProgressManager.CurrentMenuType.MAIN_GAME_SCREEN)
-                ProgressManager.setGameModeToGlobal();
-
-                kInGameView.showInGameView(activity)
-            }
-        }
-
-        //Delete user on server
-        reset_global_user_button.setOnClickListener {
-            deletePlayerDialog(activity, {
-                ProgressManager.resetOnlinePlayer();
-            })
         }
     }
 
