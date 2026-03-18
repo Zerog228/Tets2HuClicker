@@ -23,7 +23,7 @@ public class ServerPlayer{
     private static HashMap<String, String> communicationResponce = new HashMap<>();
 
     //Player data
-    private static Player player;
+    private static Player player; //TODO Add 'CurrentQMoney' and 'CurrentQEXP' that based on current killed mob in the queue. On Save/Load calculate this value, save only location level and money/exp.
     private static List<Mob> mobsQueue = new ArrayList<>(); //TODO Maybe replace it with a Queue?
     private static DataStoreSingleton datastore;
 
