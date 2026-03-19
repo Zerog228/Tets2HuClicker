@@ -30,6 +30,9 @@ public class Player {
     public static final String DEF_NAME = "Reimu";
     public static final int DEF_LEVEL = 1, DEF_EXP = 0, DEF_MONEY = 0, DEF_HEALTH = 10, DEF_BOMBS = 3, DEF_LOCATION_LEVEL = 0;
 
+    //Server-related data
+    private int current_q_money = 0, currnet_q_exp = 0;
+
     public Player(){
         this(DEF_LEVEL, DEF_EXP, DEF_MONEY, DEF_HEALTH);
     }
@@ -238,9 +241,28 @@ public class Player {
     public String getLastMobType(){
         return last_mob_type;
     }
+
     public void setLastMobType(String last_mob_type){
         this.last_mob_type = last_mob_type;
     }
+
+    public void setCurrentQMoney(int q_money){
+        this.current_q_money = q_money;
+    }
+
+    public void setCurrentQExp(int q_exp){
+        this.currnet_q_exp = q_exp;
+    }
+
+    public int getCurrentQMoney(){
+        return current_q_money;
+    }
+
+    public int getCurrentQExp(){
+        return currnet_q_exp;
+    }
+
+
 
     @NonNull
     @Override

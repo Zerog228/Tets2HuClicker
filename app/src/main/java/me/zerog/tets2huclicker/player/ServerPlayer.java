@@ -20,11 +20,10 @@ public class ServerPlayer{
     //Server communication
     private static ServerCommunicator<Void, HashMap> communicator;
     private static ServerCommunicator.ReqParams params = new ServerCommunicator.ReqParams("http://10.0.2.2:8080/api/auth");
-    private static HashMap<String, String> communicationResponce = new HashMap<>();
+    private static HashMap<String, String> communicationResponse = new HashMap<>();
 
     //Player data
     private static Player player; //TODO Add 'CurrentQMoney' and 'CurrentQEXP' that based on current killed mob in the queue. On Save/Load calculate this value, save only location level and money/exp.
-    private static List<Mob> mobsQueue = new ArrayList<>(); //TODO Maybe replace it with a Queue?
     private static DataStoreSingleton datastore;
 
     //Authorization
@@ -32,6 +31,10 @@ public class ServerPlayer{
     private static final String AUTHORIZATION_HEADER_KEY = "Authorization", ACCESS_TOKEN_KEY = "accessToken", TOKEN_TYPE_KEY = "tokenType";
     private static String authToken;
     private static String authTokenType;
+
+    //Server-received data
+    private static List<Mob> currentMobQueue = new ArrayList<>();
+    private static List<Mob> nextMobQueue = new ArrayList<>();
 
     public static void init(AppCompatActivity activity){
         if(datastore == null){
@@ -159,7 +162,7 @@ public class ServerPlayer{
 
     private static void fillResponse(HashMap<String, String> response){
         //System.out.println("Filled response!");
-        communicationResponce = new HashMap<String, String>(response);
+        communicationResponse = new HashMap<String, String>(response);
     }
 
     public static Player getPlayer(){

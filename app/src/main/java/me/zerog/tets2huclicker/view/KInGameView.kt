@@ -68,9 +68,16 @@ class KInGameView() : ViewModel() {
             AntiCheat.addStamp()
 
             if(mob.damage(1, ProgressManager.getSelectedPlayer().locationLevel, ProgressManager.getSelectedPlayer())){
-                moneyField.setText(ProgressManager.getSelectedPlayer().money.toString());
+                if(ProgressManager.getGameMode() == ProgressManager.GameMode.LOCAL){
+                    moneyField.setText(ProgressManager.getSelectedPlayer().money.toString());
+                }else{
+                    moneyField.setText(ProgressManager.getSelectedPlayer().money.toString()+" ("+")");
+                }
+
                 levelField.setText(getEXPText(ProgressManager.getSelectedPlayer()));
+
                 expBar.progress = ProgressManager.getSelectedPlayer().exp;
+
                 expBar.setMax(ProgressManager.getSelectedPlayer().levelUpCost());
                 expBar.setMin(ProgressManager.getSelectedPlayer().levelUpCost(ProgressManager.getSelectedPlayer().level - 1));
                 mobIcon.setImageResource(mob.icon);

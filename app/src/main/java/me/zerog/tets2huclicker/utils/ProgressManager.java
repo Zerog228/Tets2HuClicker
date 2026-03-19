@@ -99,6 +99,13 @@ public class ProgressManager{
         return selected_player;
     }
 
+    /**
+     * Returns unsynchronized amount of money gained from current mob queue
+     * */
+    public static int getCurrentQMoney(){
+
+    }
+
     private static int getPlayerID(AppCompatActivity activity){
         return getDatastore(activity).getOrDefault(PLAYER_ID, 1);
     }
