@@ -10,12 +10,7 @@ import me.zerog.tets2huclicker.view.KMainMenuView
 import me.zerog.tets2huclicker.view.KShopView
 
 class MainActivity : AppCompatActivity() {
-    //TODO Текст-вступление у персонажей
-    //TODO Экран улучшений
-    //TODO If you are cheating, Yamaxanadu will appear in screen corner and will grow in size
-    //TODO Предистория?
-    //TODO Изменить дизайн кнопок на нормальный
-    //TODO Переделать верхнюю панель со статами
+    //TODO Yamaxanadu cheating indicator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

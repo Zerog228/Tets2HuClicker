@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import me.zerog.tets2huclicker.utils.ProgressManager;
+
 public class Player {
 
     private String name;
@@ -198,6 +200,12 @@ public class Player {
             if(upgrade_level < upgradeType.getMaxLevel()){
                 if (removeMoney((upgrade_level + 1) * upgradeType.getCost() + upgrade_level * upgradeType.getAdditionalCostPerLevel())) {
                     upgrades.put(upgradeType, ++upgrade_level);
+
+                    //If on server
+                    if(ProgressManager.getGameMode() == ProgressManager.GameMode.GLOBAL){
+                        ServerPlayer.sendUpgradeRequest(upgradeType);
+                    }
+
                     return true;
                 } else {
                     return false;

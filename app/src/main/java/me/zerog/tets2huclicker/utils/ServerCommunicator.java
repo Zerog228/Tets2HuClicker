@@ -10,7 +10,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.ConnectException;
@@ -93,8 +92,6 @@ public class ServerCommunicator <Progress, Result>{
                 }
             }
             int responseCode = con.getResponseCode();
-            //TODO Fix "Message : {"mesage":"Error: ..."}"
-            //TODO При повторной попытке залогиниться показывает сообщение с предыдущего раза
             String response = appendResponse(con, true);
 
             if(responseCode == HTTP_OK){
@@ -132,8 +129,6 @@ public class ServerCommunicator <Progress, Result>{
 
     public static class ReqParams{
         private ReqMethod method = ReqMethod.GET;
-        //private String userAgent = "Application/1.0";
-        //private String userAgent = "Mozilla/5.0";
         private String url = "http://10.0.2.2:8080/";
         @Nullable
         private String urlPostfix;
@@ -313,5 +308,13 @@ public class ServerCommunicator <Progress, Result>{
 
     public void setPostExecuteFail(Executable<Exception> executable){
         postExecuteFail = executable;
+    }
+
+    /**
+     * Deletes 'postExecuteSuccess' and 'postExecuteFail' actions
+     * */
+    public void clearActions(){
+        postExecuteSuccess = null;
+        postExecuteFail = null;
     }
 }

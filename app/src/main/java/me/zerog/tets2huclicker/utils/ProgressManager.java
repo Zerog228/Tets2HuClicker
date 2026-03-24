@@ -14,7 +14,6 @@ public class ProgressManager{
     private static final String PLAYER_ID = "P_ID";
 
     private static Player selected_player;
-    //private static LocalPlayer localPlayer;
 
     private static DataStoreSingleton datastore;
 
@@ -25,7 +24,6 @@ public class ProgressManager{
     public static void init(AppCompatActivity activity){
         ServerPlayer.init(activity);
         LocalPlayer.init(activity);
-        //localPlayer = new LocalPlayer();
     }
 
     public static DataStoreSingleton getDatastore(AppCompatActivity activity){
@@ -36,7 +34,6 @@ public class ProgressManager{
     }
 
     private static Mob genMob(){
-        //TODO Gen mob depending on game mode
         if(gameMode == GameMode.LOCAL){
             return LocalPlayer.getMob();
         }else{
@@ -68,7 +65,7 @@ public class ProgressManager{
     }
 
     public static void resetOnlinePlayer(){
-        ServerPlayer.resetPlayer();
+        ServerPlayer.sendResetRequest();
     }
 
     public static void saveProgressOnLocal(AppCompatActivity activity){
@@ -97,13 +94,6 @@ public class ProgressManager{
             selected_player = new Player();
         }
         return selected_player;
-    }
-
-    /**
-     * Returns unsynchronized amount of money gained from current mob queue
-     * */
-    public static int getCurrentQMoney(){
-
     }
 
     private static int getPlayerID(AppCompatActivity activity){

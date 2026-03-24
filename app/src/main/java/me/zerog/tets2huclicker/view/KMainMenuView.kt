@@ -113,24 +113,23 @@ class KMainMenuView : ViewModel() {
                     return null;
                 }
             };
-            //println("User data: "+username_input_field.text.toString())
             ServerPlayer.signUp(username_input_field.text.toString(), password_input_field.text.toString(), email_input_field.text.toString(), successAction, failAction)
         }
 
         //Logging in
         val loginButton = activity.findViewById<Button>(R.id.login_button);
         loginButton.setOnClickListener {
-            if(ServerPlayer.getLogin().length == 0 && (username_input_field.text.toString().length == 0 || password_input_field.text.toString().length == 0)){
+            if(ServerPlayer.getLogin().isEmpty() && (username_input_field.text.toString().isEmpty() || password_input_field.text.toString().isEmpty())){
                 loginAlert.setMessage("Fill credentials first!")
                 loginAlert.show();
                 return@setOnClickListener;
             }
 
-            val successAction = object : Executable<HashMap<String, String>, Void>{
+            val successAction = object : Executable<HashMap<String, Any>, Void>{
                 override fun execute() {}
-                override fun execute(`in_`: HashMap<String, String>?): Void? {
+                override fun execute(`in_`: HashMap<String, Any>?): Void? {
                     activity.runOnUiThread {
-                        loginAlert.setTitle(in_?.get("message"))
+                        loginAlert.setTitle(in_?.get("message").toString())
                         loginAlert.setMessage("Logged in!")
                         loginAlert.show()
                     }
@@ -148,9 +147,7 @@ class KMainMenuView : ViewModel() {
                     in_?.printStackTrace()
                     return null;
                 }
-            };
-            //Saving provided credentials
-            //ServerPlayer.savePlayerCredentials(username_input_field.text.toString(), password_input_field.text.toString())
+            }
 
             ServerPlayer.signIn(username_input_field.text.toString(), password_input_field.text.toString(), successAction, failAction)
         }

@@ -2,11 +2,14 @@ package me.zerog.tets2huclicker.mob;
 
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import me.zerog.tets2huclicker.player.Player;
 import me.zerog.tets2huclicker.R;
+import me.zerog.tets2huclicker.player.ServerPlayer;
+import me.zerog.tets2huclicker.utils.ProgressManager;
 
 import static me.zerog.tets2huclicker.utils.IntercontinentalMobInfo.*;
 
@@ -17,7 +20,7 @@ public class Mob {
     private int currHealth;
     private int locationLevel;
     private final int LEVEL_HP_MULT = 10;
-    private final int LOCATION_LEVELS_PER_BOSS = 20;
+    private static final int LOCATION_LEVELS_PER_BOSS = 20;
     private boolean isAlive = true;
 
     public Mob(int locationLevel){
@@ -76,12 +79,25 @@ public class Mob {
         return (int) (LEVEL_HP_MULT * getTrueLocLevel() * type.getHpMult());
     }
 
-    private void kill(Player killer){
+    public void kill(Player killer){
         this.isAlive = false;
 
         if(killer != null){
             killer.addExp((int) (killer.getExpMult() * getTrueLocLevel() * type.getExpMult()));
             killer.addMoney((int) (killer.getMoneyMult() * getTrueLocLevel() * type.getMoneyMult()));
+        }
+
+        //Server-side shenanigans
+        if(ProgressManager.getGameMode() == ProgressManager.GameMode.GLOBAL){
+            if(type.isBoss()){
+                ServerPlayer.sendKillBossRequest();
+            }
+
+            //Reset progress on final boss
+            if(type == MobType.MIMA){
+                ServerPlayer.sendResetRequest();
+                //TODO Show ending screen
+            }
         }
     }
 
@@ -135,7 +151,8 @@ public class Mob {
 
     /**
      *
-     * @param damage
+     * @param damage Amount of damage dealt to mob
+     * @param locationLevel Next location for the mob to spawn
      * @return Returns 'true' if died, 'else' otherwise
      */
     public boolean damage(int damage, int locationLevel, @Nullable Player attacker){
@@ -165,19 +182,19 @@ public class Mob {
         return this.type.getIcon();
     }
 
-    private List<MobType> getOutdoorEnemies(){
+    private static List<MobType> getOutdoorEnemies(){
         return List.of(MobType.DAIYOUSEI, MobType.STAR, MobType.LUNA, MobType.SUNNY, MobType.FAIRY, MobType.KEDAMA, MobType.KAGEROU);
     }
 
-    private List<MobType> getIndoorEnemies(){
+    private static List<MobType> getIndoorEnemies(){
         return List.of(MobType.KEDAMA, MobType.FAIRY_MAID_ONE, MobType.FAIRY_MAID_TWO, MobType.FAIRY_MAID_THREE, MobType.KOAKUMA);
     }
 
-    private List<MobType> getAllBosses(){
+    private static List<MobType> getAllBosses(){
         return List.of(MobType.RUMIA, MobType.CIRNO, MobType.MEILING, MobType.PATCHOULI, MobType.SAKUYA, MobType.REMILIA, MobType.FLANDRE, MobType.MIMA);
     }
 
-    private MobType getBoss(int locationLevel){
+    private static MobType getBoss(int locationLevel){
         if(locationLevel == LOCATION_LEVELS_PER_BOSS)
             return MobType.RUMIA;
 
@@ -202,6 +219,40 @@ public class Mob {
         return MobType.KEDAMA;
     }
 
+    public static int getLocationLevelsPerBoss(){
+        return LOCATION_LEVELS_PER_BOSS;
+    }
+
+    public static List<Mob> genMobs(int location_level, long seed){
+        List<Mob> mobs = new ArrayList<>(location_level);
+        Random rand = new Random(seed);
+        for(int current_location = 1; current_location <= location_level; current_location++){
+            //If boss
+            if(current_location % LOCATION_LEVELS_PER_BOSS == 0){
+                mobs.add(new Mob(getBoss(current_location), current_location));
+                continue;
+            }
+
+            //Indoor or Outdoor. First 3 bosses will be outdoor, other 4 - indoor
+            if(current_location < LOCATION_LEVELS_PER_BOSS * 3){
+                mobs.add(new Mob(getOutdoorEnemies().get(rand.nextInt(getOutdoorEnemies().size())), current_location));
+                continue;
+            }else if(current_location < LOCATION_LEVELS_PER_BOSS * 7){
+                mobs.add(new Mob(getIndoorEnemies().get(rand.nextInt(getIndoorEnemies().size())), current_location));
+                continue;
+            }
+
+            //If none passes
+            MobType type = MobType.values()[rand.nextInt(MobType.values().length)];
+            mobs.add(new Mob(type, current_location));
+            if(type == MobType.MIMA){
+                return mobs;
+            }
+        }
+        mobs.add(new Mob(MobType.MIMA, location_level + 1));
+
+        return mobs;
+    }
 
     enum MobType { //TODO Draw textures
         //Outdoor mobs
@@ -225,16 +276,16 @@ public class Mob {
         SATORI("Satori", R.drawable.kedama, SATORI_HEALTH, SATORI_EXP, SATORI_MONEY),
 
         //Bosses
-        RUMIA("Rumia", R.drawable.rumia, RUMIA_HEALTH, RUMIA_EXP, RUMIA_MONEY),
-        CIRNO("Cirno the Wise", R.drawable.cirno, CIRNO_HEALTH, CIRNO_EXP, CIRNO_MONEY),
-        MEILING("Hong Meiling", R.drawable.kedama, MEILING_HEALTH, MEILING_EXP, MEILING_MONEY),
-        PATCHOULI("Patchouli Knowledge", R.drawable.kedama, PATCHOULI_HEALTH, PATCHOULI_EXP, PATCHOULI_MONEY),
-        SAKUYA("Sakuya Izayoi", R.drawable.kedama, SAKUYA_HEALTH, SAKUYA_EXP, SAKUYA_MONEY),
-        REMILIA("Remilia Scarlet", R.drawable.kedama, REMILIA_HEALTH, REMILIA_EXP, REMILIA_MONEY),
-        FLANDRE("Flandre Scarlet", R.drawable.kedama, FLANDRE_HEALTH, FLANDRE_EXP, FLANDRE_MONEY),
+        RUMIA("Rumia", R.drawable.rumia, RUMIA_HEALTH, RUMIA_EXP, RUMIA_MONEY, true),
+        CIRNO("Cirno the Wise", R.drawable.cirno, CIRNO_HEALTH, CIRNO_EXP, CIRNO_MONEY, true),
+        MEILING("Hong Meiling", R.drawable.kedama, MEILING_HEALTH, MEILING_EXP, MEILING_MONEY, true),
+        PATCHOULI("Patchouli Knowledge", R.drawable.kedama, PATCHOULI_HEALTH, PATCHOULI_EXP, PATCHOULI_MONEY, true),
+        SAKUYA("Sakuya Izayoi", R.drawable.kedama, SAKUYA_HEALTH, SAKUYA_EXP, SAKUYA_MONEY, true),
+        REMILIA("Remilia Scarlet", R.drawable.kedama, REMILIA_HEALTH, REMILIA_EXP, REMILIA_MONEY, true),
+        FLANDRE("Flandre Scarlet", R.drawable.kedama, FLANDRE_HEALTH, FLANDRE_EXP, FLANDRE_MONEY, true),
 
         //Additional bosses
-        MIMA("Mima the Forgotten", R.drawable.kedama, MIMA_HEALTH, MIMA_EXP, MIMA_MONEY),
+        MIMA("Mima the Forgotten", R.drawable.kedama, MIMA_HEALTH, MIMA_EXP, MIMA_MONEY, true),
 
         //NPC's
         NITORI("Nitori Kawashiro", R.drawable.nitori), //Merchant in the shop
@@ -242,20 +293,26 @@ public class Mob {
         ;
 
         private final String name;
-        private float hp_mult = 1, exp_mult = 1, money_mult = 1;
+        private float hp_mult, exp_mult, money_mult;
         private final int icon;
+        private final boolean boss;
 
         MobType(String name, int icon){
-            this.name = name;
-            this.icon = icon;
+            this(name, icon, 1, 1, 1);
         }
 
         MobType(String name, int icon, float hp_mult, float exp_mult, float money_mult){
+            this(name, icon, hp_mult, exp_mult, money_mult, false);
+        }
+
+        MobType(String name, int icon, float hp_mult, float exp_mult, float money_mult, boolean boss){
             this.name = name;
             this.icon = icon;
             this.hp_mult = hp_mult;
             this.exp_mult = exp_mult;
             this.money_mult = money_mult;
+
+            this.boss = boss;
         }
 
         public String getName(){
@@ -276,6 +333,10 @@ public class Mob {
 
         public float getMoneyMult() {
             return money_mult;
+        }
+
+        public boolean isBoss(){
+            return boss;
         }
     }
 }
