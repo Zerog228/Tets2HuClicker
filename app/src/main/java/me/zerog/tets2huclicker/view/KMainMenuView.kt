@@ -55,7 +55,7 @@ class KMainMenuView : ViewModel() {
         val refresh_online_player_button = activity.findViewById<Button>(R.id.refresh_online_player);
         val reset_global_user_button = activity.findViewById<Button>(R.id.reset_progress_server_button);
         val global_player_text_view = activity.findViewById<TextView>(R.id.global_player_text_view);
-        global_player_text_view.setText(getPlayerString(ProgressManager.getOnlinePlayer(), "Player not found! Try refreshing connection"))
+        global_player_text_view.text = ServerPlayer.getPlayerInfo()
 
         //Online player selection logic
         select_online_player_button.setOnClickListener {
@@ -88,30 +88,32 @@ class KMainMenuView : ViewModel() {
         username_input_field.text = ServerPlayer.getLogin()
         password_input_field.text = ServerPlayer.getPassword()
 
+        ServerPlayer.setUpdatePlayerInfo {
+            if(!username_input_field.text.isEmpty()){
+                ServerPlayer.getPlayer().name = username_input_field.text.toString();
+            }
+            global_player_text_view.text = ServerPlayer.getPlayerInfo()
+            return@setUpdatePlayerInfo null
+        }
+
         signupButton.setOnClickListener { //TODO Verify all the fields
-            val successAction = object : Executable<HashMap<String, String>, Void>{
-                override fun execute() {}
-                override fun execute(`in_`: HashMap<String, String>?): Void? {
-                    activity.runOnUiThread {
-                        loginAlert.setTitle(in_?.get("message"))
-                        loginAlert.setMessage(username_input_field.text)
-                        loginAlert.show()
-                    }
-                    ServerPlayer.savePlayerCredentials(username_input_field.text.toString(), password_input_field.text.toString());
-                    ServerPlayer.signIn()
-                    return null;
+            val successAction = Executable<HashMap<String, String>, Void> { in_ ->
+                activity.runOnUiThread {
+                    loginAlert.setTitle(in_?.get("message"))
+                    loginAlert.setMessage(username_input_field.text)
+                    loginAlert.show()
                 }
+                ServerPlayer.savePlayerCredentials(username_input_field.text.toString(), password_input_field.text.toString());
+                ServerPlayer.signIn()
+                null;
             };
-            val failAction = object : Executable<Exception, Void>{
-                override fun execute() {}
-                override fun execute(`in_`: Exception?): Void? {
-                    activity.runOnUiThread {
-                        loginAlert.setMessage(in_?.message.toString())
-                        loginAlert.show()
-                    }
-                    //in_?.printStackTrace()
-                    return null;
+            val failAction = Executable<Exception, Void> { in_ ->
+                activity.runOnUiThread {
+                    loginAlert.setMessage(in_?.message.toString())
+                    loginAlert.show()
                 }
+                //in_?.printStackTrace()
+                null;
             };
             ServerPlayer.signUp(username_input_field.text.toString(), password_input_field.text.toString(), email_input_field.text.toString(), successAction, failAction)
         }
@@ -125,28 +127,23 @@ class KMainMenuView : ViewModel() {
                 return@setOnClickListener;
             }
 
-            val successAction = object : Executable<HashMap<String, Any>, Void>{
-                override fun execute() {}
-                override fun execute(`in_`: HashMap<String, Any>?): Void? {
-                    activity.runOnUiThread {
-                        loginAlert.setTitle(in_?.get("message").toString())
-                        loginAlert.setMessage("Logged in!")
-                        loginAlert.show()
-                    }
-                    global_player_text_view.text = getPlayerString(ServerPlayer.getPlayer())
-                    return null;
+            val successAction = Executable<HashMap<String, Any>, Void> {
+                activity.runOnUiThread {
+                    loginAlert.setTitle("Log-in info")
+                    loginAlert.setMessage("Logged in!")
+                    loginAlert.show()
                 }
+                ServerPlayer.getPlayer().name = username_input_field.text.toString();
+                global_player_text_view.text = getPlayerString(ServerPlayer.getPlayer())
+                null;
             };
-            val failAction = object : Executable<Exception, Void>{
-                override fun execute() {}
-                override fun execute(`in_`: Exception?): Void? {
-                    activity.runOnUiThread {
-                        loginAlert.setMessage(in_?.message.toString())
-                        loginAlert.show()
-                    }
-                    in_?.printStackTrace()
-                    return null;
+            val failAction = Executable<Exception, Void> { in_ ->
+                activity.runOnUiThread {
+                    loginAlert.setMessage(in_?.message.toString())
+                    loginAlert.show()
                 }
+                in_?.printStackTrace()
+                null;
             }
 
             ServerPlayer.signIn(username_input_field.text.toString(), password_input_field.text.toString(), successAction, failAction)
@@ -155,17 +152,10 @@ class KMainMenuView : ViewModel() {
         //refresh
         refresh_online_player_button.setOnClickListener {
             //Sets text when response is filled
-            val executable = object : Executable<Void, Void>{
-                override fun execute() {
-                    global_player_text_view.text =
-                        getPlayerString(ProgressManager.getOnlinePlayer(), "Player not found! Try refreshing connection")
-                }
-
-                override fun execute(`in`: Void?): Void? {
-                    global_player_text_view.text =
-                        getPlayerString(ProgressManager.getOnlinePlayer(), "Player not found! Try refreshing connection")
-                    return null;
-                }
+            val executable = Executable<Void, Void> {
+                global_player_text_view.text =
+                    getPlayerString(ProgressManager.getOnlinePlayer(), "Player not found! Try refreshing connection")
+                null;
             };
 
             //TODO

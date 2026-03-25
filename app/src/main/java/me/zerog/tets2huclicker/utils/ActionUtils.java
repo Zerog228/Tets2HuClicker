@@ -53,18 +53,27 @@ public class ActionUtils {
             try{
                 action.put("action", data[0]);
                 action.put("info", data[1]);
-                action.put("location", data[2]);
-                action.put("clientTimestamp", data[3]);
+                action.put("location", String.valueOf(data[2]));
+                action.put("clientTimestamp", String.valueOf(data[3]));
             }catch (Exception ignored){
                 action.put("action", "INIT");
                 action.put("info", "null");
-                action.put("location", ServerPlayer.getPlayer().getLocationLevel());
-                action.put("clientTimestamp", System.currentTimeMillis());
+                action.put("location", String.valueOf(ServerPlayer.getPlayer().getLocationLevel()));
+                action.put("clientTimestamp", String.valueOf(System.currentTimeMillis()));
             }
             actions.add(action);
         });
 
         return actions;
+    }
+
+    public static void syncActions(DataStoreSingleton dataStore, List<Map<String, Object>> compared){
+        if(compared != null && compared.size() > getActions(dataStore).size()){
+            dataStore.setValue(ACTION_KEY+"_amount", 0);
+            for(Map<String, Object> action : compared){
+                addAction(dataStore, action.get("action") + SEPARATOR + action.get("info") + SEPARATOR + action.get("location") + SEPARATOR + action.get("clientTimestamp"));
+            }
+        }
     }
 
     public enum Type{

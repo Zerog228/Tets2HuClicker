@@ -28,7 +28,7 @@ public class Mob {
     }
 
     public Mob(MobType mobType, int locationLevel){
-        createMob(mobType, genHealth(locationLevel), locationLevel);
+        createMob(mobType, genHealth(locationLevel, mobType), locationLevel);
     }
 
     public Mob(int left_health, int locationLevel) {
@@ -79,7 +79,7 @@ public class Mob {
         return (int) (LEVEL_HP_MULT * getTrueLocLevel() * type.getHpMult());
     }
 
-    public void kill(Player killer){
+    public void kill(Player killer, boolean sendRequest){
         this.isAlive = false;
 
         if(killer != null){
@@ -139,12 +139,12 @@ public class Mob {
      * @param damage
      * @return Returns if died
      */
-    public boolean damage(int damage, @Nullable Player attacker){
+    public boolean damage(int damage, @Nullable Player attacker, boolean sendRequest){
         if(this.currHealth > damage){
             currHealth -= damage;
             return false;
         }else {
-            kill(attacker);
+            kill(attacker, sendRequest);
             return true;
         }
     }
@@ -155,13 +155,13 @@ public class Mob {
      * @param locationLevel Next location for the mob to spawn
      * @return Returns 'true' if died, 'else' otherwise
      */
-    public boolean damage(int damage, int locationLevel, @Nullable Player attacker){
+    public boolean damage(int damage, int locationLevel, @Nullable Player attacker, boolean sendRequest){
         if(this.currHealth > damage){
             currHealth -= damage;
             return false;
         }else {
-            kill(attacker);
-            respawn(locationLevel);
+            kill(attacker, sendRequest);
+            respawn(locationLevel + 1);
             return true;
         }
     }

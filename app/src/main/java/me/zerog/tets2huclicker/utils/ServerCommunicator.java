@@ -4,6 +4,7 @@ import static java.net.HttpURLConnection.HTTP_OK;
 
 import android.os.AsyncTask;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.gson.Gson;
@@ -276,6 +277,22 @@ public class ServerCommunicator <Progress, Result>{
         }
         public ReqParams(String url, ReqMethod reqMethod){
             this.url = url; this.method = reqMethod;
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            StringBuilder bd = new StringBuilder();
+            bd.append("RequestType: ").append(method.name()).append("\n");
+            bd.append("URL: ").append(url).append(urlPostfix).append("\n");
+            bd.append("Headers: ______").append("\n");
+            headers.forEach((key, value) -> bd.append(key).append(" : ").append(value).append("\n"));
+            bd.append("______").append("\n");
+            bd.append("Body: ______").append("\n");
+            jsonBody.forEach((key, value) -> bd.append(key).append(" : ").append(value).append("\n"));
+            bd.append("______").append("\n");
+            bd.append("Do input: ").append(doInput).append(" | ").append("Do output: ").append(doOutput).append(" | ").append("Use caches: ").append(defaultUseCaches).append("\n");
+            return bd.toString();
         }
     }
 

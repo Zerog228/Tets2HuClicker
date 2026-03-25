@@ -5,6 +5,8 @@ import static me.zerog.tets2huclicker.utils.ProgressManager.getDatastore;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,7 +27,7 @@ public class ServerPlayer{
     private static HashMap<String, Object> communicationResponse = new HashMap<>();
 
     //Player data
-    private static Player player; //TODO Add 'CurrentQMoney' and 'CurrentQEXP' that based on current killed mob in the queue. On Save/Load calculate this value, save only location level and money/exp.
+    private static Player player;
     private static DataStoreSingleton datastore;
 
     //Authorization
@@ -34,6 +36,9 @@ public class ServerPlayer{
     //Server-received data
     private static long mobSeed;
     private static List<Mob> mobs;
+
+    //Additional updates
+    private static Executable<Void, Void> updatePlayerInfo;
 
     public static void init(AppCompatActivity activity){
         if(datastore == null){
@@ -47,11 +52,6 @@ public class ServerPlayer{
         );
 
         signIn();
-    }
-
-    //TODO Post on server
-    public static void saveProgressOnServer(Player player){
-
     }
 
     //TODO Ability to signUp only if there is no associated account
@@ -106,12 +106,17 @@ public class ServerPlayer{
                 if(postSuccessAction != null){
                     postSuccessAction.execute(map);
                 }
+                if(updatePlayerInfo != null){
+                    updatePlayerInfo.execute(null);
+                }
             });
             communicator.setPostExecuteFail(response -> {
                 if(postFailAction != null){
                     postFailAction.execute(response);
                 }
             });
+
+            authParams.addJSONBodyValue("actions", new Gson().toJson(ActionUtils.getActions(datastore)));
 
             //Send communication
             communicator.run(authParams.withPostfix("/signin"));
@@ -124,6 +129,7 @@ public class ServerPlayer{
         ServerCommunicator.ReqParams copy = gameParams.withPostfix("/boss");
         copy.addJSONBodyValue("location_level", player.getLocationLevel()+"");
         copy.addJSONBodyValue("timestamp", System.currentTimeMillis()+"");
+        copy.setMethod(ServerCommunicator.ReqMethod.GET);
 
         communicator.run(copy);
     }
@@ -135,6 +141,32 @@ public class ServerPlayer{
         copy.addJSONBodyValue("ability", upgrade.name());
         copy.addJSONBodyValue("location_level", player.getLocationLevel()+"");
         copy.addJSONBodyValue("timestamp", System.currentTimeMillis()+"");
+        copy.setMethod(ServerCommunicator.ReqMethod.GET);
+
+        communicator.run(copy);
+    }
+
+    public static void sendSaveRequest(){
+        sendSaveRequest(null, null);
+    }
+
+    public static void sendSaveRequest(Executable<Void, Void> success, Executable<Exception, String> fail){
+        ServerCommunicator.ReqParams copy = gameParams.withPostfix("/save");
+        communicator.clearActions();
+        communicator.setPostExecuteSuccess(response -> {
+            if(success != null){
+                success.execute(null);
+            }
+        });
+        communicator.setPostExecuteFail(exception -> {
+            if(fail != null){
+                fail.execute(exception);
+            }
+        });
+        copy.setMethod(ServerCommunicator.ReqMethod.GET);
+
+        copy.addJSONBodyValue("location_level", String.valueOf(player.getLocationLevel()));
+        copy.addJSONBodyValue("actions", new Gson().toJson(ActionUtils.getActions(datastore)));
 
         communicator.run(copy);
     }
@@ -161,18 +193,30 @@ public class ServerPlayer{
         return mobs.get(player.getLocationLevel() - 1);
     }
 
+    public static String getPlayerInfo(){
+        if(player != null){
+            return player.getName() + " " + player.getExp() + "e " + player.getMoney() + "$ " + player.getLocationLevel() + "_ll";
+        }else{
+            return "Player not found!";
+        }
+    }
+
+    public static void setUpdatePlayerInfo(Executable<Void, Void> updater){
+        updatePlayerInfo = updater;
+    }
+
     private static void buildPlayer(HashMap<String, Object> map){
         gameParams.addHeader("Authorization", "Bearer "+map.get("token"));
-
         try{
-            mobSeed = (long) map.get("mob_seed");
+            mobSeed = Long.parseLong((String) map.get("mob_seed"));
             mobs = Mob.genMobs(8 * Mob.getLocationLevelsPerBoss(), mobSeed);
             List<Map<String, Object>> actions = (List<Map<String, Object>>) map.get("actions");
             Map<Integer, List<Player.Upgrade>> upgradeMap = mapUpgrades(actions);
-
+            ActionUtils.syncActions(datastore, actions);
             player = new Player();
+            System.out.println("Got level: "+map.get("location_level"));
 
-            for(int i = 0; i < (int) map.get("location_level") - 1; i++){
+            for(int i = 0; i < Integer.parseInt((String) map.get("location_level")) - 1; i++){
                 if(upgradeMap.containsKey(i)){
                     for(Player.Upgrade upgrade : upgradeMap.get(i)){
                         player.upgradeAbility(upgrade);
@@ -180,11 +224,17 @@ public class ServerPlayer{
                 }
 
                 //Kill mob from this location
-                mobs.get(i).kill(player);
+                mobs.get(i).kill(player, false);
+                player.increaseLocationLevel();
             }
+            System.out.println(getPlayerInfo());
 
         }catch (Exception ignored){
             ignored.printStackTrace();
+        }
+
+        if(updatePlayerInfo != null){
+            updatePlayerInfo.execute(null);
         }
     }
 
