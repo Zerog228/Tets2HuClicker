@@ -71,7 +71,7 @@ class KInGameView() : ViewModel() {
             //Anti-cheat
             AntiCheat.addStamp()
 
-            if(mob.damage(1, ProgressManager.getSelectedPlayer(), ProgressManager.getGameMode() == ProgressManager.GameMode.GLOBAL)){
+            if(mob.damage(ProgressManager.getSelectedPlayer().damage, ProgressManager.getSelectedPlayer(), ProgressManager.getGameMode() == ProgressManager.GameMode.GLOBAL)){
                 moneyField.setText(ProgressManager.getSelectedPlayer().money.toString());
 
                 levelField.setText(getEXPText(ProgressManager.getSelectedPlayer()));

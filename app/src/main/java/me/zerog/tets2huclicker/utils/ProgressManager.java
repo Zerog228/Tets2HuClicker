@@ -64,8 +64,8 @@ public class ProgressManager{
         LocalPlayer.resetPlayer(activity);
     }
 
-    public static void resetOnlinePlayer(){
-        ServerPlayer.sendResetRequest();
+    public static void resetOnlinePlayer(Executable<Void, Void> success, Executable<Exception, String> fail){
+        ServerPlayer.sendResetRequest(success, fail);
     }
 
     public static void saveProgressOnLocal(AppCompatActivity activity){

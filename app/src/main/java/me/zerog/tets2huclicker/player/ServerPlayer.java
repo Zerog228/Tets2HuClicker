@@ -17,6 +17,7 @@ import me.zerog.tets2huclicker.mob.Mob;
 import me.zerog.tets2huclicker.utils.ActionUtils;
 import me.zerog.tets2huclicker.utils.DataStoreSingleton;
 import me.zerog.tets2huclicker.utils.Executable;
+import me.zerog.tets2huclicker.utils.ProgressManager;
 import me.zerog.tets2huclicker.utils.ServerCommunicator;
 
 public class ServerPlayer{
@@ -54,7 +55,6 @@ public class ServerPlayer{
         signIn();
     }
 
-    //TODO Ability to signUp only if there is no associated account
     public static void signUp(String name, String password, String email, @Nullable Executable<HashMap<String, String>, Void> postResponseAction, @Nullable Executable<Exception, Void> postFailAction){
         long time = System.currentTimeMillis();
         authParams.addJSONBodyValue("timestamp", String.valueOf(time));
@@ -78,6 +78,8 @@ public class ServerPlayer{
         authParams.addJSONBodyValue("password", password);
         authParams.addJSONBodyValue("email", email);
 
+        ActionUtils.clearActions(datastore);
+
         communicator.run(authParams.withPostfix("/signup", ServerCommunicator.ReqMethod.POST));
     }
 
@@ -86,6 +88,12 @@ public class ServerPlayer{
     }
 
     public static void signIn(@Nullable String login, @Nullable String password, @Nullable Executable<HashMap<String, Object>, Void> postSuccessAction, @Nullable Executable<Exception, Void> postFailAction){
+        //Clear actionList if logged in from new account
+        if(datastore.hasKey(LOGIN) && !datastore.getStringValue(LOGIN).equals(login)){
+            ActionUtils.clearActions(datastore);
+            System.out.println("Cleared actions!");
+        }
+        //If doesn't have credentials
         if(!datastore.hasKey(LOGIN) && login != null && password != null && !login.isEmpty() && !password.isEmpty()){
             datastore.setValue(LOGIN, login);
             datastore.setValue(PASSWORD, password);
@@ -125,10 +133,12 @@ public class ServerPlayer{
 
     public static void sendKillBossRequest(){
         ActionUtils.addAction(datastore, ActionUtils.killBoss(player.getLocationLevel()));
+
         communicator.clearActions();
         ServerCommunicator.ReqParams copy = gameParams.withPostfix("/boss");
         copy.addJSONBodyValue("location_level", player.getLocationLevel()+"");
         copy.addJSONBodyValue("timestamp", System.currentTimeMillis()+"");
+        copy.addJSONBodyValue("actions", new Gson().toJson(ActionUtils.getActions(datastore)));
         copy.setMethod(ServerCommunicator.ReqMethod.GET);
 
         communicator.run(copy);
@@ -141,6 +151,7 @@ public class ServerPlayer{
         copy.addJSONBodyValue("ability", upgrade.name());
         copy.addJSONBodyValue("location_level", player.getLocationLevel()+"");
         copy.addJSONBodyValue("timestamp", System.currentTimeMillis()+"");
+        copy.addJSONBodyValue("actions", new Gson().toJson(ActionUtils.getActions(datastore)));
         copy.setMethod(ServerCommunicator.ReqMethod.GET);
 
         communicator.run(copy);
@@ -171,9 +182,35 @@ public class ServerPlayer{
         communicator.run(copy);
     }
 
-    public static void sendResetRequest(){
-        player = new Player();
-        //TODO Reset player on server
+    public static void sendResetRequest(Executable<Void, Void> success, Executable<Exception, String> fail){
+        ServerCommunicator.ReqParams copy = gameParams.withPostfix("/delete");
+        communicator.clearActions();
+        communicator.setPostExecuteSuccess(response -> {
+            if(success != null){
+                success.execute(null);
+            }
+
+            ActionUtils.clearActions(datastore);
+            ActionUtils.addAction(datastore, ActionUtils.init());
+            try{
+                mobSeed = Long.parseLong((String) response.get("mob_seed"));
+            }catch (Exception ignored){}
+            player = new Player();
+            //System.out.println("New seed - "+mobSeed);
+
+            if(updatePlayerInfo != null){
+                updatePlayerInfo.execute(null);
+            }
+            ProgressManager.setCurrentMenuType(ProgressManager.CurrentMenuType.MAIN_MENU);
+        });
+        communicator.setPostExecuteFail(exception -> {
+            if(fail != null){
+                fail.execute(exception);
+            }
+        });
+        copy.addJSONBodyValue("timestamp", System.currentTimeMillis()+"");
+
+        communicator.run(copy);
     }
 
     public static void savePlayerCredentials(String login, String password){
@@ -214,12 +251,16 @@ public class ServerPlayer{
             Map<Integer, List<Player.Upgrade>> upgradeMap = mapUpgrades(actions);
             ActionUtils.syncActions(datastore, actions);
             player = new Player();
-            System.out.println("Got level: "+map.get("location_level"));
+            //System.out.println("Got level: "+map.get("location_level"));
+            System.out.println("Mapped upgrades: "+upgradeMap);
 
             for(int i = 0; i < Integer.parseInt((String) map.get("location_level")) - 1; i++){
-                if(upgradeMap.containsKey(i)){
-                    for(Player.Upgrade upgrade : upgradeMap.get(i)){
-                        player.upgradeAbility(upgrade);
+
+                System.out.println("Went through "+i);
+                if(upgradeMap.containsKey(i + 1)){
+                    for(Player.Upgrade upgrade : upgradeMap.get(i + 1)){
+                        //TODO FIX IT (NOT UPGRADING)
+                        System.out.println("Upgraded "+upgrade.name()+" on level "+(i + 1)+"? "+ player.upgradeAbility(upgrade, false));
                     }
                 }
 
@@ -227,7 +268,7 @@ public class ServerPlayer{
                 mobs.get(i).kill(player, false);
                 player.increaseLocationLevel();
             }
-            System.out.println(getPlayerInfo());
+            //System.out.println(getPlayerInfo());
 
         }catch (Exception ignored){
             ignored.printStackTrace();
@@ -252,12 +293,13 @@ public class ServerPlayer{
         actions.forEach(map -> {
             try{
                 if(((String) map.get("action")).equals(ActionUtils.Type.UPGRADE.name())){
-                    if(upgradeMap.containsKey((int) map.get("location") - 1)){
-                        List<Player.Upgrade> upgrades = new ArrayList<>(upgradeMap.get((int) map.get("location") - 1));
+                    int location_level = (int)(double) map.get("location");
+                    if(upgradeMap.containsKey(location_level - 1)){
+                        List<Player.Upgrade> upgrades = new ArrayList<>(upgradeMap.get(location_level - 1));
                         upgrades.add(Player.Upgrade.valueOf((String) map.get("info")));
-                        upgradeMap.put((int) map.get("location") - 1, upgrades);
+                        upgradeMap.put(location_level - 1, upgrades);
                     }else{
-                        upgradeMap.put((int) map.get("location") - 1, Collections.singletonList(Player.Upgrade.valueOf((String) map.get("info"))));
+                        upgradeMap.put(location_level - 1, Collections.singletonList(Player.Upgrade.valueOf((String) map.get("info"))));
                     }
                 }
             }catch (Exception ignored){

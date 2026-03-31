@@ -68,12 +68,20 @@ public class ActionUtils {
     }
 
     public static void syncActions(DataStoreSingleton dataStore, List<Map<String, Object>> compared){
-        if(compared != null && compared.size() > getActions(dataStore).size()){
+        if(compared != null){
             dataStore.setValue(ACTION_KEY+"_amount", 0);
             for(Map<String, Object> action : compared){
                 addAction(dataStore, action.get("action") + SEPARATOR + action.get("info") + SEPARATOR + action.get("location") + SEPARATOR + action.get("clientTimestamp"));
             }
         }
+    }
+
+    public static void clearActions(DataStoreSingleton dataStore){
+        dataStore.setValue(ACTION_KEY+"_amount", 0);
+    }
+
+    public static String amount(DataStoreSingleton dataStore){
+        return dataStore.getStringValue(ACTION_KEY+"_amount");
     }
 
     public enum Type{

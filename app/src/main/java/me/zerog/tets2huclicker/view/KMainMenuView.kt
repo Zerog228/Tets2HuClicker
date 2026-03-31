@@ -70,7 +70,30 @@ class KMainMenuView : ViewModel() {
         //Delete user on server
         reset_global_user_button.setOnClickListener {
             deletePlayerDialog(activity, {
-                ProgressManager.resetOnlinePlayer();
+                ProgressManager.resetOnlinePlayer(
+                    {
+                        global_player_text_view.text = ServerPlayer.getPlayerInfo();
+                        activity.runOnUiThread {
+                            var alert = AlertDialog.Builder(activity)
+                                .setTitle("Deleted user")
+                                .setMessage("Account was successfully deleted!")
+                                .create();
+                            alert.show()
+                        }
+                        null;
+                    },
+                    {
+                        exception ->
+                        activity.runOnUiThread {
+                            var alert = AlertDialog.Builder(activity)
+                                .setTitle("Error")
+                                .setMessage(exception.message)
+                                .create();
+                            alert.show()
+                        }
+                        null;
+                    }
+                );
             })
         }
 
@@ -151,14 +174,10 @@ class KMainMenuView : ViewModel() {
 
         //refresh
         refresh_online_player_button.setOnClickListener {
-            //Sets text when response is filled
-            val executable = Executable<Void, Void> {
-                global_player_text_view.text =
-                    getPlayerString(ProgressManager.getOnlinePlayer(), "Player not found! Try refreshing connection")
+            ServerPlayer.signIn(username_input_field.text.toString(), password_input_field.text.toString(), {
+                global_player_text_view.text = getPlayerString(ServerPlayer.getPlayer());
                 null;
-            };
-
-            //TODO
+            }, null)
         }
     }
 

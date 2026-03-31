@@ -95,8 +95,13 @@ public class Mob {
 
             //Reset progress on final boss
             if(type == MobType.MIMA){
-                ServerPlayer.sendResetRequest();
-                //TODO Show ending screen
+                ServerPlayer.sendResetRequest(
+                        null,
+                        fail -> {
+                            ProgressManager.setCurrentMenuType(ProgressManager.CurrentMenuType.MAIN_MENU);
+                            return null;
+                        }
+                );
             }
         }
     }

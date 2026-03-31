@@ -31,9 +31,7 @@ public class Player {
 
     public static final String DEF_NAME = "Reimu";
     public static final int DEF_LEVEL = 1, DEF_EXP = 0, DEF_MONEY = 0, DEF_HEALTH = 10, DEF_BOMBS = 3, DEF_LOCATION_LEVEL = 0;
-
-    //Server-related data
-    private int current_q_money = 0, currnet_q_exp = 0;
+    private static final int DEF_DAMAGE = 1;
 
     public Player(){
         this(DEF_LEVEL, DEF_EXP, DEF_MONEY, DEF_HEALTH);
@@ -194,15 +192,23 @@ public class Player {
         this.location_level = location_level;
     }
 
-    public boolean upgradeAbility(Upgrade upgradeType){
+    public int getAbilityLevel(Upgrade upgrade){
+        return upgrades.getOrDefault(upgrade, 0);
+    }
+
+    public boolean upgradeAbility(Upgrade upgrade){
+        return upgradeAbility(upgrade, true);
+    }
+
+    public boolean upgradeAbility(Upgrade upgradeType, boolean sendRequest){
         try {
             int upgrade_level = upgrades.get(upgradeType);
             if(upgrade_level < upgradeType.getMaxLevel()){
-                if (removeMoney((upgrade_level + 1) * upgradeType.getCost() + upgrade_level * upgradeType.getAdditionalCostPerLevel())) {
+                if (removeMoney(upgradeType.calcCost(upgrade_level))) {
                     upgrades.put(upgradeType, ++upgrade_level);
 
                     //If on server
-                    if(ProgressManager.getGameMode() == ProgressManager.GameMode.GLOBAL){
+                    if(ProgressManager.getGameMode() == ProgressManager.GameMode.GLOBAL && sendRequest){
                         ServerPlayer.sendUpgradeRequest(upgradeType);
                     }
 
@@ -254,23 +260,9 @@ public class Player {
         this.last_mob_type = last_mob_type;
     }
 
-    public void setCurrentQMoney(int q_money){
-        this.current_q_money = q_money;
+    public int getDamage(){
+        return (int) (DEF_DAMAGE + DEF_DAMAGE * upgrades.get(Upgrade.LONGER_STICK) * Upgrade.LONGER_STICK.getAbilityPower());
     }
-
-    public void setCurrentQExp(int q_exp){
-        this.currnet_q_exp = q_exp;
-    }
-
-    public int getCurrentQMoney(){
-        return current_q_money;
-    }
-
-    public int getCurrentQExp(){
-        return currnet_q_exp;
-    }
-
-
 
     @NonNull
     @Override
@@ -307,6 +299,10 @@ public class Player {
 
         public int getCost() {
             return cost;
+        }
+
+        public int calcCost(int upgrade_level){
+            return (upgrade_level + 1) * getCost() + upgrade_level * getAdditionalCostPerLevel();
         }
 
         public int getCostInPoints() {
