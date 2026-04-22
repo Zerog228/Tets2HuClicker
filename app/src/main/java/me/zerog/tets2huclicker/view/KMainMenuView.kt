@@ -72,7 +72,6 @@ class KMainMenuView : ViewModel() {
             deletePlayerDialog(activity, {
                 ProgressManager.resetOnlinePlayer(
                     {
-                        global_player_text_view.text = ServerPlayer.getPlayerInfo();
                         activity.runOnUiThread {
                             var alert = AlertDialog.Builder(activity)
                                 .setTitle("Deleted user")
@@ -80,6 +79,7 @@ class KMainMenuView : ViewModel() {
                                 .create();
                             alert.show()
                         }
+                        global_player_text_view.text = ServerPlayer.getPlayerInfo();
                         null;
                     },
                     {

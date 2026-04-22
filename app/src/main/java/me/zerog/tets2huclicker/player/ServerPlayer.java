@@ -186,22 +186,25 @@ public class ServerPlayer{
         ServerCommunicator.ReqParams copy = gameParams.withPostfix("/delete");
         communicator.clearActions();
         communicator.setPostExecuteSuccess(response -> {
-            if(success != null){
-                success.execute(null);
-            }
-
             ActionUtils.clearActions(datastore);
             ActionUtils.addAction(datastore, ActionUtils.init());
             try{
                 mobSeed = Long.parseLong((String) response.get("mob_seed"));
-            }catch (Exception ignored){}
+                System.out.println("Set mob seed to: "+mobSeed);
+            }catch (Exception ignored){
+                ignored.printStackTrace();
+            }
             player = new Player();
-            //System.out.println("New seed - "+mobSeed);
+            mobs = Mob.genMobs(8 * Mob.getLocationLevelsPerBoss(), mobSeed);
 
             if(updatePlayerInfo != null){
                 updatePlayerInfo.execute(null);
             }
             ProgressManager.setCurrentMenuType(ProgressManager.CurrentMenuType.MAIN_MENU);
+
+            if(success != null){
+                success.execute(null);
+            }
         });
         communicator.setPostExecuteFail(exception -> {
             if(fail != null){
@@ -252,21 +255,23 @@ public class ServerPlayer{
             ActionUtils.syncActions(datastore, actions);
             player = new Player();
             //System.out.println("Got level: "+map.get("location_level"));
-            System.out.println("Mapped upgrades: "+upgradeMap);
+            //System.out.println("Mapped upgrades: "+upgradeMap);
 
             for(int i = 0; i < Integer.parseInt((String) map.get("location_level")) - 1; i++){
 
-                System.out.println("Went through "+i);
-                if(upgradeMap.containsKey(i + 1)){
-                    for(Player.Upgrade upgrade : upgradeMap.get(i + 1)){
-                        //TODO FIX IT (NOT UPGRADING)
-                        System.out.println("Upgraded "+upgrade.name()+" on level "+(i + 1)+"? "+ player.upgradeAbility(upgrade, false));
-                    }
-                }
+                //System.out.println("Went through "+i);
 
                 //Kill mob from this location
                 mobs.get(i).kill(player, false);
                 player.increaseLocationLevel();
+
+                if(upgradeMap.containsKey(i + 1)){
+                    for(Player.Upgrade upgrade : upgradeMap.get(i + 1)){
+                        player.upgradeAbility(upgrade, false);
+
+                        //System.out.println("Upgraded "+upgrade.name()+" on level "+(i + 1)+"? "+ player.upgradeAbility(upgrade, false));
+                    }
+                }
             }
             //System.out.println(getPlayerInfo());
 

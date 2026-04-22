@@ -204,7 +204,7 @@ public class Player {
         try {
             int upgrade_level = upgrades.get(upgradeType);
             if(upgrade_level < upgradeType.getMaxLevel()){
-                if (removeMoney(upgradeType.calcCost(upgrade_level))) {
+                if (true/*removeMoney(upgradeType.calcCost(upgrade_level))*/) {
                     upgrades.put(upgradeType, ++upgrade_level);
 
                     //If on server
