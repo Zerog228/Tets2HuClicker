@@ -89,7 +89,7 @@ public class Mob {
 
         //Server-side shenanigans
         if(ProgressManager.getGameMode() == ProgressManager.GameMode.GLOBAL){
-            if(type.isBoss()){
+            if(type.isBoss() && sendRequest){
                 ServerPlayer.sendKillBossRequest();
             }
 
