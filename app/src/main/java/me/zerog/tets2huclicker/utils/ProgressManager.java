@@ -10,6 +10,7 @@ import me.zerog.tets2huclicker.mob.Mob;
 import me.zerog.tets2huclicker.player.LocalPlayer;
 import me.zerog.tets2huclicker.player.ServerPlayer;
 
+//TODO Screen with local player is not resetting on progress reset
 public class ProgressManager{
     private static final String PLAYER_ID = "P_ID";
 

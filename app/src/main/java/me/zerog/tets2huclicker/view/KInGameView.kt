@@ -84,6 +84,7 @@ class KInGameView() : ViewModel() {
 
                 if(ProgressManager.getGameMode() == ProgressManager.GameMode.LOCAL){
                     ProgressManager.saveProgressOnLocal(activity);
+                    mob.respawn(ProgressManager.getSelectedPlayer().locationLevel)
                 }else{
                     mob = ProgressManager.getMob();
                 }

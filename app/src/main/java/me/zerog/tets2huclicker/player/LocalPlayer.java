@@ -71,7 +71,7 @@ public class LocalPlayer {
             mob = new Mob(0);
         }
 
-        System.out.println("Saving progress. Mob - "+mob.getType());
+        //System.out.println("Saving progress. Mob - "+mob.getType());
 
         datastore.setValue(LAST_MOB_TYPE, mob.getType());
         datastore.setValue(MOB_HEALTH, mob.getCurrHealth());
